@@ -454,18 +454,21 @@
           </summary>
           <div class="content">
             <div class="diagram-wrap">
+              <pre class="mermaid" id="overviewSrc">
+flowchart LR
+  classDef phase fill:#111b3a,stroke:rgba(255,255,255,.22),stroke-width:1px,color:#e7eaf3;
+  classDef gate fill:#2a1f3f,stroke:rgba(122,162,255,.55),stroke-width:1.2px,color:#e7eaf3;
 
-                flowchart LR
-  P0["P0\nFoundation\nVDR ingestion + extracts"]
-  P1["P1\nFinancial Statements\nBuild faces"]
-  G14["T14 Gate\nFS Tie-out MUST PASS"]
-  P2["P2\nFootnotes\nParallel notes"]
-  P3["P3\nMD&A + Market Risk\nParallel sections"]
-  P4["P4\nBusiness Narrative\nPart I"]
-  P5["P5\nArrangements with DGC\nKey agreements"]
-  P6["P6\nGovernance/Comp/Ownership\nPart III"]
-  P7["P7\nCapitalization & Securities"]
-  P8["P8\nAssembly + QA Gates\nT75→T76→T77"]
+  P0["P0<br/>Foundation<br/><span style='font-size:11px;color:#aab1c5'>VDR ingestion + extracts</span>"]:::phase
+  P1["P1<br/>Financial Statements<br/><span style='font-size:11px;color:#aab1c5'>Build faces</span>"]:::phase
+  G14["T14 Gate<br/>FS Tie-out must PASS"]:::gate
+  P2["P2<br/>Footnotes<br/><span style='font-size:11px;color:#aab1c5'>T17–T34 parallel</span>"]:::phase
+  P3["P3<br/>MD&A + Market Risk<br/><span style='font-size:11px;color:#aab1c5'>T35–T44 parallel</span>"]:::phase
+  P4["P4<br/>Business Narrative<br/><span style='font-size:11px;color:#aab1c5'>Runs after P0</span>"]:::phase
+  P5["P5<br/>Arrangements with DGC<br/><span style='font-size:11px;color:#aab1c5'>Runs after P0</span>"]:::phase
+  P6["P6<br/>Governance/Comp/Ownership<br/><span style='font-size:11px;color:#aab1c5'>Mostly after P0</span>"]:::phase
+  P7["P7<br/>Capitalization & Securities"]:::phase
+  P8["P8<br/>Assembly + QA Gates<br/><span style='font-size:11px;color:#aab1c5'>T75→T76→T77</span>"]:::phase
 
   P0 --> P1 --> G14 --> P2
   G14 --> P3
@@ -479,6 +482,7 @@
   P5 --> P8
   P6 --> P8
   P7 --> P8
+              </pre>
             </div>
 
             <div class="codebox" id="overviewCode" style="display:none;"></div>
