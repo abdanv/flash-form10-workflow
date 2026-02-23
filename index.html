@@ -1,976 +1,1150 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Project Flashback — Form 10 Workflow (Mermaid)</title>
-
-  <!-- Mermaid -->
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-
-  <style>
-    :root{
-      --bg:#0b1020;
-      --panel:#0f1630;
-      --panel2:#111b3a;
-      --text:#e7eaf3;
-      --muted:#aab1c5;
-      --border:rgba(255,255,255,.10);
-      --accent:#7aa2ff;
-      --accent2:#41d1ff;
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --radius: 14px;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-    }
-
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: var(--sans);
-      background: radial-gradient(1200px 700px at 10% 10%, rgba(122,162,255,.20), transparent 60%),
-                  radial-gradient(900px 600px at 90% 15%, rgba(65,209,255,.14), transparent 55%),
-                  var(--bg);
-      color:var(--text);
-    }
-
-    a{color:inherit; text-decoration:none}
-    a:hover{color:var(--accent2)}
-    .app{
-      display:grid;
-      grid-template-columns: 320px 1fr;
-      min-height: 100vh;
-    }
-
-    /* Sidebar */
-    .sidebar{
-      position:sticky;
-      top:0;
-      height:100vh;
-      padding:20px 16px;
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      border-right: 1px solid var(--border);
-      overflow:auto;
-    }
-    .brand{
-      padding:14px 14px 10px;
-      border:1px solid var(--border);
-      border-radius: var(--radius);
-      background: rgba(0,0,0,.18);
-      box-shadow: var(--shadow);
-      margin-bottom:14px;
-    }
-    .brand h1{
-      margin:0;
-      font-size:14px;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      color: var(--muted);
-    }
-    .brand .title{
-      margin-top:8px;
-      font-size:16px;
-      line-height:1.25;
-      font-weight:700;
-      color: var(--text);
-    }
-    .brand .subtitle{
-      margin-top:6px;
-      font-size:12px;
-      color: var(--muted);
-      line-height:1.35;
-    }
-
-    .controls{
-      display:flex;
-      gap:10px;
-      padding:10px 2px 14px;
-    }
-    .btn{
-      flex:1;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.06);
-      color: var(--text);
-      border-radius: 12px;
-      padding:10px 10px;
-      cursor:pointer;
-      font-weight:600;
-      font-size:12px;
-      transition:.15s ease;
-    }
-    .btn:hover{
-      border-color: rgba(122,162,255,.45);
-      background: rgba(122,162,255,.12);
-      transform: translateY(-1px);
-    }
-    .search{
-      width:100%;
-      border:1px solid var(--border);
-      background: rgba(0,0,0,.18);
-      color: var(--text);
-      border-radius: 12px;
-      padding:10px 12px;
-      outline:none;
-      margin-bottom:10px;
-      font-size:13px;
-    }
-    .search::placeholder{color: rgba(170,177,197,.8)}
-
-    .nav{
-      margin-top:10px;
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-    .nav a{
-      padding:10px 12px;
-      border-radius: 12px;
-      border:1px solid transparent;
-      color: var(--muted);
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      align-items:center;
-      font-size:13px;
-      background: transparent;
-      transition:.15s ease;
-    }
-    .nav a:hover{
-      color: var(--text);
-      background: rgba(255,255,255,.06);
-      border-color: rgba(255,255,255,.10);
-    }
-    .pill{
-      font-family: var(--mono);
-      font-size:11px;
-      padding:3px 8px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      color: var(--text);
-      background: rgba(0,0,0,.14);
-      white-space:nowrap;
-    }
-
-    /* Main content */
-    .main{
-      padding:24px 22px 60px;
-      overflow:auto;
-    }
-
-    .hero{
-      display:grid;
-      grid-template-columns: 1.2fr .8fr;
-      gap:14px;
-      margin-bottom: 16px;
-    }
-    .card{
-      border:1px solid var(--border);
-      border-radius: var(--radius);
-      background: rgba(255,255,255,.05);
-      box-shadow: var(--shadow);
-      padding:16px 16px;
-    }
-    .card h2{
-      margin:0 0 10px;
-      font-size:18px;
-      letter-spacing:.01em;
-    }
-    .meta{
-      margin:0;
-      color: var(--muted);
-      font-size:13px;
-      line-height:1.5;
-    }
-    .kv{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-      margin-top:12px;
-    }
-    .kv .k{
-      border:1px solid var(--border);
-      background: rgba(0,0,0,.14);
-      border-radius: 12px;
-      padding:10px 12px;
-    }
-    .kv .k .label{
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:.08em;
-      color: var(--muted);
-    }
-    .kv .k .value{
-      margin-top:6px;
-      font-size:14px;
-      font-weight:700;
-    }
-
-    .section{
-      scroll-margin-top: 16px;
-      margin-top: 14px;
-    }
-    .section-header{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom: 10px;
-    }
-    .section-header h3{
-      margin:0;
-      font-size:16px;
-    }
-    .section-header p{
-      margin:6px 0 0;
-      color: var(--muted);
-      font-size:13px;
-      line-height:1.45;
-      max-width: 900px;
-    }
-
-    .actions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-    }
-    .smallbtn{
-      border:1px solid var(--border);
-      background: rgba(0,0,0,.14);
-      color: var(--text);
-      border-radius: 12px;
-      padding:8px 10px;
-      cursor:pointer;
-      font-size:12px;
-      font-weight:600;
-      transition:.15s ease;
-    }
-    .smallbtn:hover{
-      border-color: rgba(65,209,255,.45);
-      background: rgba(65,209,255,.12);
-      transform: translateY(-1px);
-    }
-
-    details{
-      border:1px solid var(--border);
-      border-radius: var(--radius);
-      background: rgba(0,0,0,.10);
-      overflow:hidden;
-    }
-    summary{
-      cursor:pointer;
-      padding:12px 14px;
-      font-weight:700;
-      list-style:none;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      user-select:none;
-    }
-    summary::-webkit-details-marker{display:none}
-    .summary-right{
-      display:flex;
-      gap:8px;
-      align-items:center;
-      color: var(--muted);
-      font-size:12px;
-      font-family: var(--mono);
-    }
-    .content{
-      padding: 0 14px 14px;
-    }
-
-    /* Mermaid blocks */
-    .diagram-wrap{
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.04);
-      border-radius: 14px;
-      padding:12px;
-      overflow:auto;
-    }
-    pre.mermaid{
-      margin:0;
-      font-family: var(--mono);
-      font-size:12px;
-      line-height:1.35;
-      color: transparent; /* hide source text once rendered */
-    }
-
-    /* Code view (optional) */
-    .codebox{
-      margin-top:12px;
-      border:1px solid var(--border);
-      background: rgba(0,0,0,.18);
-      border-radius: 14px;
-      padding:10px 12px;
-      overflow:auto;
-      max-height: 260px;
-      color: var(--text);
-      font-family: var(--mono);
-      font-size:12px;
-      line-height:1.35;
-      white-space:pre;
-    }
-
-    .footer{
-      margin-top: 18px;
-      color: var(--muted);
-      font-size:12px;
-      padding: 8px 4px;
-    }
-
-    @media (max-width: 980px){
-      .app{grid-template-columns: 1fr}
-      .sidebar{position:relative; height:auto}
-      .hero{grid-template-columns: 1fr}
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flash Form 10 Build Workflow — LLM Capability Classification</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        
+        header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.95;
+            margin-bottom: 20px;
+        }
+        
+        header .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+        
+        header .stat {
+            text-align: center;
+        }
+        
+        header .stat-number {
+            font-size: 2.5em;
+            font-weight: 700;
+            display: block;
+        }
+        
+        header .stat-label {
+            font-size: 0.95em;
+            opacity: 0.9;
+        }
+        
+        .legend {
+            background: #f8f9fa;
+            padding: 30px 40px;
+            border-bottom: 3px solid #e9ecef;
+        }
+        
+        .legend h2 {
+            color: #2a5298;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid;
+        }
+        
+        .legend-item.green {
+            background: #D4EDDA;
+            border-color: #155724;
+            color: #155724;
+        }
+        
+        .legend-item.yellow {
+            background: #FFF3CD;
+            border-color: #856404;
+            color: #856404;
+        }
+        
+        .legend-item.red {
+            background: #F8D7DA;
+            border-color: #721C24;
+            color: #721C24;
+        }
+        
+        .legend-item.purple {
+            background: #E0BBE4;
+            border-color: #5D3A8C;
+            color: #5D3A8C;
+        }
+        
+        .legend-icon {
+            font-size: 2em;
+            margin-right: 15px;
+        }
+        
+        .legend-content strong {
+            display: block;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+        
+        .legend-content span {
+            font-size: 0.9em;
+        }
+        
+        nav {
+            background: #2c3e50;
+            padding: 20px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        nav h3 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+        
+        nav a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        main {
+            padding: 40px;
+        }
+        
+        .chart-section {
+            margin-bottom: 60px;
+        }
+        
+        .chart-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 0;
+        }
+        
+        .chart-header h2 {
+            font-size: 1.8em;
+            margin-bottom: 8px;
+        }
+        
+        .chart-header .phase-info {
+            opacity: 0.9;
+            font-size: 0.95em;
+        }
+        
+        .chart-content {
+            background: white;
+            border: 2px solid #2a5298;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            padding: 30px;
+        }
+        
+        .mermaid {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .copy-button-container {
+            text-align: right;
+            margin-top: 20px;
+        }
+        
+        .copy-button {
+            background: #2a5298;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: all 0.3s;
+        }
+        
+        .copy-button:hover {
+            background: #1e3c72;
+            transform: translateY(-2px);
+        }
+        
+        .copy-button:active {
+            transform: translateY(0);
+        }
+        
+        .info-box {
+            background: #e8f4f8;
+            border-left: 4px solid #2a5298;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .info-box h3 {
+            color: #2a5298;
+            margin-bottom: 10px;
+        }
+        
+        .info-box p {
+            line-height: 1.6;
+            color: #495057;
+        }
+        
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+        }
+        
+        footer p {
+            margin-bottom: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+            
+            header .stats {
+                gap: 20px;
+            }
+            
+            nav ul {
+                flex-direction: column;
+            }
+            
+            .legend-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
-
 <body>
-  <div class="app">
-
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-      <div class="brand">
-        <h1>Project Flashback</h1>
-        <div class="title">Flash Corporation — Form 10 Workflow</div>
-        <div class="subtitle">
-          Split-by-phase Mermaid view for presentation + review.
+    <div class="container">
+        <header>
+            <h1>Flash Corporation Form 10 Build Workflow</h1>
+            <div class="subtitle">LLM Capability Classification — DGC Spin-Off of Flash Memory Business</div>
+            <div class="stats">
+                <div class="stat">
+                    <span class="stat-number">84</span>
+                    <span class="stat-label">Total Tasks</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">10</span>
+                    <span class="stat-label">Phases</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">6</span>
+                    <span class="stat-label">Decision Gates</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">12-18</span>
+                    <span class="stat-label">Weeks Duration</span>
+                </div>
+            </div>
+        </header>
+        
+        <div class="legend">
+            <h2>🎨 LLM Capability Classification Legend</h2>
+            <div class="legend-grid">
+                <div class="legend-item green">
+                    <div class="legend-icon">🟢</div>
+                    <div class="legend-content">
+                        <strong>LLM-READY (35 tasks, 42%)</strong>
+                        <span>Fully automated — LLM can execute autonomously</span>
+                    </div>
+                </div>
+                <div class="legend-item yellow">
+                    <div class="legend-icon">🟡</div>
+                    <div class="legend-content">
+                        <strong>HYBRID (38 tasks, 45%)</strong>
+                        <span>LLM drafts, human expert reviews & approves</span>
+                    </div>
+                </div>
+                <div class="legend-item red">
+                    <div class="legend-icon">🔴</div>
+                    <div class="legend-content">
+                        <strong>HUMAN-ONLY (11 tasks, 13%)</strong>
+                        <span>Requires professional judgment — Management/Legal/Accounting</span>
+                    </div>
+                </div>
+                <div class="legend-item purple">
+                    <div class="legend-icon">💎</div>
+                    <div class="legend-content">
+                        <strong>DECISION GATE (6 gates)</strong>
+                        <span>Go/No-Go checkpoint — Multi-party approval required</span>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-
-      <div class="controls">
-        <button class="btn" id="expandAllBtn">Expand all</button>
-        <button class="btn" id="collapseAllBtn">Collapse all</button>
-      </div>
-
-      <input class="search" id="navSearch" placeholder="Filter sections (e.g., P2, MD&A, Risk Factors)..." />
-
-      <nav class="nav" id="nav">
-        <a href="#overview" data-label="overview">
-          Overview <span class="pill">DAG</span>
-        </a>
-        <a href="#phase0" data-label="phase 0 foundation p0 vdr ingestion source data extraction">
-          Phase 0 <span class="pill">P0</span>
-        </a>
-        <a href="#phase1" data-label="phase 1 financial statements p1 tie-out t14">
-          Phase 1 <span class="pill">P1</span>
-        </a>
-        <a href="#phase2" data-label="phase 2 footnotes p2">
-          Phase 2 <span class="pill">P2</span>
-        </a>
-        <a href="#phase3" data-label="phase 3 md&a market risk p3 item 7 item 7a">
-          Phase 3 <span class="pill">P3</span>
-        </a>
-        <a href="#phase4" data-label="phase 4 business narrative risk factors cybersecurity properties legal p4">
-          Phase 4 <span class="pill">P4</span>
-        </a>
-        <a href="#phase5" data-label="phase 5 arrangements with dgc agreements tsa ema tma ip p5">
-          Phase 5 <span class="pill">P5</span>
-        </a>
-        <a href="#phase6" data-label="phase 6 governance compensation ownership part iii directors officers p6">
-          Phase 6 <span class="pill">P6</span>
-        </a>
-        <a href="#phase7" data-label="phase 7 capitalization securities p7">
-          Phase 7 <span class="pill">P7</span>
-        </a>
-        <a href="#phase8" data-label="phase 8 assembly cross-reference quality gates p8 verification t75 t76 t77">
-          Phase 8 <span class="pill">P8</span>
-        </a>
-      </nav>
-
-      <div class="footer">
-        Tip: Use the filter to jump fast (e.g., “T14”, “Risk Factors”, “Arrangements”).
-      </div>
-    </aside>
-
-    <!-- MAIN -->
-    <main class="main">
-      <div class="hero">
-        <section class="card">
-          <h2>Workflow Map (Presentation View)</h2>
-          <p class="meta">
-            This page presents the Form 10 build as a <b>directed acyclic graph (DAG)</b> split into
-            <b>9 phases</b>. Tasks can run in parallel except for key gates (notably <b>T14</b> tie-out).
-          </p>
-          <div class="kv">
-            <div class="k">
-              <div class="label">Task Count</div>
-              <div class="value">78 granular tasks</div>
+        
+        <nav>
+            <h3>📊 Navigation — Jump to Phase</h3>
+            <ul>
+                <li><a href="#chart-overview">Overview</a></li>
+                <li><a href="#chart-p-1">P-1: Close VDR Gaps</a></li>
+                <li><a href="#chart-p0">P0: Foundation Setup</a></li>
+                <li><a href="#chart-p1">P1: Financial Statements</a></li>
+                <li><a href="#chart-p2a">P2A: Note 1 Policies</a></li>
+                <li><a href="#chart-p2b">P2B: Notes 2-10</a></li>
+                <li><a href="#chart-p3a">P3A: MD&A Results</a></li>
+                <li><a href="#chart-p3b">P3B: MD&A Liquidity</a></li>
+                <li><a href="#chart-p4a">P4A: Business Core</a></li>
+                <li><a href="#chart-p4b">P4B: Risk Factors</a></li>
+                <li><a href="#chart-p5">P5: Arrangements</a></li>
+                <li><a href="#chart-p6">P6: Governance</a></li>
+                <li><a href="#chart-p7">P7: Capitalization</a></li>
+                <li><a href="#chart-p8">P8: Assembly & QC</a></li>
+            </ul>
+        </nav>
+        
+        <main>
+            <div class="info-box">
+                <h3>📋 About This Workflow</h3>
+                <p>This interactive workflow maps the complete process for building Flash Corporation's Form 10 registration statement for the DGC spin-off. Each task is classified by LLM capability (Green/Yellow/Red) and assigned to specific parties (Management, Accounting, Legal, Tax, FP&A, Treasury, Deloitte, HR, IT, Operations, Board, SEC Counsel). The workflow includes critical decision gates requiring multi-party approval and addresses all feedback from the Gap Analysis, including the addition of Phase -1 to build missing VDR files.</p>
             </div>
-            <div class="k">
-              <div class="label">Phases</div>
-              <div class="value">P0 → P8</div>
-            </div>
-            <div class="k">
-              <div class="label">Critical Gate</div>
-              <div class="value">T14 — FS tie-out</div>
-            </div>
-            <div class="k">
-              <div class="label">Final Assembly</div>
-              <div class="value">T75 → T76 → T77</div>
-            </div>
-          </div>
-        </section>
-
-        <section class="card">
-          <h2>How to Read This</h2>
-          <p class="meta">
-            Each phase section contains:
-          </p>
-          <ul class="meta" style="margin:10px 0 0 18px;">
-            <li>A collapsible Mermaid diagram for that phase</li>
-            <li>Optional “Show Mermaid source” for quick edits</li>
-            <li>Copy button to grab source into Mermaid Live / docs</li>
-          </ul>
-          <p class="meta" style="margin-top:10px;">
-            The Overview diagram reflects the “critical path” and parallel streams described in the Task Decomposition Map.
-          </p>
-        </section>
-      </div>
-
-      <!-- OVERVIEW -->
-      <section class="section" id="overview">
-        <div class="section-header">
-          <div>
-            <h3>Overview — Phase DAG</h3>
-            <p>
-              High-level phase flow, reflecting: critical path (T01 → … → T14 → Footnotes+MD&A → T75 → T76 → T77)
-              and parallel streams (Business narrative; Arrangements; Governance). :contentReference[oaicite:1]{index=1}
-            </p>
-          </div>
-          <div class="actions">
-            <button class="smallbtn" data-copy="overviewSrc">Copy Mermaid</button>
-            <button class="smallbtn" data-toggle="overviewCode">Show Mermaid source</button>
-          </div>
-        </div>
-
-        <details open>
-          <summary>
-            Overview Diagram
-            <span class="summary-right"><span>Mermaid</span><span class="pill">Overview</span></span>
-          </summary>
-          <div class="content">
-            <div class="diagram-wrap">
-              <pre class="mermaid" id="overviewSrc">
-flowchart LR
-  classDef phase fill:#111b3a,stroke:rgba(255,255,255,.22),stroke-width:1px,color:#e7eaf3;
-  classDef gate fill:#2a1f3f,stroke:rgba(122,162,255,.55),stroke-width:1.2px,color:#e7eaf3;
-
-  P0["P0<br/>Foundation<br/><span style='font-size:11px;color:#aab1c5'>VDR ingestion + extracts</span>"]:::phase
-  P1["P1<br/>Financial Statements<br/><span style='font-size:11px;color:#aab1c5'>Build faces</span>"]:::phase
-  G14["T14 Gate<br/>FS Tie-out must PASS"]:::gate
-  P2["P2<br/>Footnotes<br/><span style='font-size:11px;color:#aab1c5'>T17–T34 parallel</span>"]:::phase
-  P3["P3<br/>MD&A + Market Risk<br/><span style='font-size:11px;color:#aab1c5'>T35–T44 parallel</span>"]:::phase
-  P4["P4<br/>Business Narrative<br/><span style='font-size:11px;color:#aab1c5'>Runs after P0</span>"]:::phase
-  P5["P5<br/>Arrangements with DGC<br/><span style='font-size:11px;color:#aab1c5'>Runs after P0</span>"]:::phase
-  P6["P6<br/>Governance/Comp/Ownership<br/><span style='font-size:11px;color:#aab1c5'>Mostly after P0</span>"]:::phase
-  P7["P7<br/>Capitalization & Securities"]:::phase
-  P8["P8<br/>Assembly + QA Gates<br/><span style='font-size:11px;color:#aab1c5'>T75→T76→T77</span>"]:::phase
-
-  P0 --> P1 --> G14 --> P2
-  G14 --> P3
-  P0 --> P4
-  P0 --> P5
-  P0 --> P6
-  P0 --> P7
-  P2 --> P8
-  P3 --> P8
-  P4 --> P8
-  P5 --> P8
-  P6 --> P8
-  P7 --> P8
-              </pre>
-            </div>
-
-            <div class="codebox" id="overviewCode" style="display:none;"></div>
-          </div>
-        </details>
-      </section>
-
-      <!-- PHASE 0 -->
-      <section class="section" id="phase0">
-        <div class="section-header">
-          <div>
-            <h3>Phase 0 — Foundation (P0)</h3>
-            <p>VDR index + core extracts. This phase feeds essentially everything downstream; enables parallelism immediately after indexing.</p>
-          </div>
-          <div class="actions">
-            <button class="smallbtn" data-copy="p0Src">Copy Mermaid</button>
-            <button class="smallbtn" data-toggle="p0Code">Show Mermaid source</button>
-          </div>
-        </div>
-
-        <details open>
-          <summary>Phase 0 Diagram <span class="summary-right"><span class="pill">P0</span></span></summary>
-          <div class="content">
-            <div class="diagram-wrap">
-              <pre class="mermaid" id="p0Src">
+            
+            <!-- Overview Chart -->
+            <div class="chart-section" id="chart-overview">
+                <div class="chart-header">
+                    <h2>Overview — Full Workflow Map</h2>
+                    <div class="phase-info">10 Phases | 84 Tasks | Critical Path: P-1 → P0 → P1 → P2/P3 → P8</div>
+                </div>
+                <div class="chart-content">
+                    <div class="mermaid">
 flowchart TD
-    %% ══════════════════════════════════════════════════
-    %% PHASE 0 — FOUNDATION
-    %% ══════════════════════════════════════════════════
-    subgraph P0["⬛ PHASE 0 — Foundation: VDR Ingestion & Source Data Extraction"]
-        direction TB
-        T01["T01\nIngest & Index VDR\n📄 Flash_VDR_File_Index.xlsx\n→ Master VDR Registry (342 files)"]
+    classDef green fill:#D4EDDA,stroke:#155724,color:#155724,stroke-width:2px
+    classDef yellow fill:#FFF3CD,stroke:#856404,color:#856404,stroke-width:2px
+    classDef red fill:#F8D7DA,stroke:#721C24,color:#721C24,stroke-width:2px
+    classDef purple fill:#E0BBE4,stroke:#5D3A8C,color:#5D3A8C,stroke-width:3px,font-weight:bold
+    classDef phase fill:#2E4057,stroke:#2E4057,color:#FFFFFF,stroke-width:2px
 
-        T02["T02\nParse DGC 10-K FY2023\n📄 03.03.02.05 DGC 10-K FY2023\n→ Flash segment extract FY2023"]
-        T03["T03\nParse DGC 10-K FY2022\n📄 03.03.02.01 DGC 10-K FY2022\n→ Flash segment extract FY2022"]
-        T04["T04\nParse DGC 10-K FY2021\n📄 03.03.02.02 DGC 10-K FY2021\n→ Flash segment extract FY2021"]
-
-        T05["T05\nParse FBK Historical Financials + Validate\n📄 04.02.04 FBK_Historical_Financials_Annual.xlsx\n→ Extract tables + validation report"]
-
-        T06["T06\nParse Pro Forma Model (Adj Register)\n📄 04.01.01 ProFormaModel.xlsm\n→ Pro forma adjustment register"]
-
-        T07a["T07a\nParse Separation & Distribution Agreement\n📄 05.01.01 SDA\n→ SDA key terms register"]
-        T07b["T07b\nParse TSA + IT TSA + Loans/Guarantees\n📄 05.02.01 TSA + 05.07.xx\n→ TSA services register + loan summary"]
-        T07c["T07c\nParse EMA/TMA/IP/Trademark/RRA\n📄 05.03/07.01/05.04/05.05/05.06\n→ agreement key terms registers"]
-
-        T08["T08\nParse Carve-Out Methodology & Allocations\n📄 04.03.xx\n→ allocation methodology summary"]
-
-        T09["T09\nParse Draft Info Statement — Build Outline\n📄 03.06.07 Draft Info Statement\n→ section outline + gap map"]
-
-        T01 --> T02 & T03 & T04 & T05 & T06 & T07a & T07b & T07c & T08 & T09
-        T02 & T03 & T04 --> T05
-    end
-              </pre>
+    PM1["P-1: Close VDR Gaps<br/>0G | 4Y | 5R"]:::red
+    P0["P0: Foundation Setup<br/>9G | 2R | 0Y"]:::green
+    P1["P1: Financial Statements<br/>0G | 6Y | 2R"]:::yellow
+    P2["P2: Footnotes (18 notes)<br/>13G | 5Y | 0R"]:::green
+    P3["P3: MD&A (10 sections)<br/>3G | 17Y | 0R"]:::yellow
+    P4["P4: Business Narrative<br/>3G | 15Y | 0R"]:::yellow
+    P5["P5: Arrangements with DGC<br/>0G | 7Y | 0R"]:::yellow
+    P6["P6: Governance & Comp<br/>3G | 4Y | 0R"]:::yellow
+    P7["P7: Capitalization<br/>1G | 1Y | 1R"]:::green
+    P8["P8: Assembly & QC<br/>1G | 2Y | 5R"]:::red
+    
+    G0{{"T00: Audit<br/>Status<br/>Decision"}}:::purple
+    G1{{"T05: Financial<br/>Validation<br/>Gate"}}:::purple
+    G2{{"T14: Financial<br/>Tie-Out<br/>Gate"}}:::purple
+    G3{{"T75: Cross-Ref<br/>Verification<br/>Gate"}}:::purple
+    G4{{"T79: Management<br/>Review<br/>Gate"}}:::purple
+    G5{{"T80: Board<br/>Approval<br/>Gate"}}:::purple
+    
+    PM1 --> G0
+    G0 -->|"AUDITED<br/>(SKIP P-1)"| P0
+    G0 -->|"NOT AUDITED<br/>(DO P-1)"| PM1
+    P0 --> G1
+    G1 --> P1
+    P1 --> G2
+    G2 --> P2
+    G2 --> P3
+    P0 --> P4
+    P0 --> P5
+    P0 --> P6
+    P0 --> P7
+    P2 --> P8
+    P3 --> P8
+    P4 --> P8
+    P5 --> P8
+    P6 --> P8
+    P7 --> P8
+    P8 --> G3
+    G3 --> G4
+    G4 --> G5
+                    </div>
+                    <div class="copy-button-container">
+                        <button class="copy-button" onclick="copyMermaidCode(this)">📋 Copy Mermaid Code</button>
+                    </div>
+                </div>
             </div>
-            <div class="codebox" id="p0Code" style="display:none;"></div>
-          </div>
-        </details>
-      </section>
 
-      <!-- PHASE 1 -->
-      <section class="section" id="phase1">
-        <div class="section-header">
-          <div>
-            <h3>Phase 1 — Financial Statements (P1)</h3>
-            <p>Face statements + tie-out gate. Nothing in Footnotes (P2) or MD&A (P3) should proceed until T14 passes.</p>
-          </div>
-          <div class="actions">
-            <button class="smallbtn" data-copy="p1Src">Copy Mermaid</button>
-            <button class="smallbtn" data-toggle="p1Code">Show Mermaid source</button>
-          </div>
-        </div>
-
-        <details open>
-          <summary>Phase 1 Diagram <span class="summary-right"><span class="pill">P1</span></span></summary>
-          <div class="content">
-            <div class="diagram-wrap">
-              <pre class="mermaid" id="p1Src">
+            <!-- Phase -1 Chart -->
+            <div class="chart-section" id="chart-p-1">
+                <div class="chart-header">
+                    <h2>Phase -1: Close VDR Gaps</h2>
+                    <div class="phase-info">Tasks T00-T00H | Duration: 6-10 weeks | 👥 Accounting Team + Deloitte + Management + Legal</div>
+                </div>
+                <div class="chart-content">
+                    <div class="info-box">
+                        <h3>Purpose</h3>
+                        <p>Build missing files identified in Gap Analysis (XX_1 through XX_13). This phase only executes if T00 decision determines carveout financials are not yet audited. If already audited, skip directly to Phase 0.</p>
+                    </div>
+                    <div class="mermaid">
 flowchart TD
-    %% ══════════════════════════════════════════════════
-    %% PHASE 1 — FINANCIAL STATEMENTS
-    %% ══════════════════════════════════════════════════
-    subgraph P1["🟦 PHASE 1 — Financial Statements"]
-        direction TB
-        T10["T10\nDraft Income Statement (3-Year)\n→ IS table"]
-        T11["T11\nDraft Balance Sheet (2-Year)\n→ BS table"]
-        T12["T12\nDraft Cash Flow Statement (3-Year)\n→ CF table"]
-        T13["T13\nDraft Statement of Equity (3-Year)\n→ Equity rollforward"]
+    classDef green fill:#D4EDDA,stroke:#155724,color:#155724,stroke-width:2px
+    classDef yellow fill:#FFF3CD,stroke:#856404,color:#856404,stroke-width:2px
+    classDef red fill:#F8D7DA,stroke:#721C24,color:#721C24,stroke-width:2px
+    classDef purple fill:#E0BBE4,stroke:#5D3A8C,color:#5D3A8C,stroke-width:3px,font-weight:bold
+    classDef phase fill:#2E4057,stroke:#2E4057,color:#FFFFFF,stroke-width:2px
 
-        T14["T14\nTie-Out & Cross-Check Face Statements\n✅ PASS/FAIL checklist (12 tests)"]
-
-        T15["T15\nBuild Pro Forma Income Statement\n(Art. 11)\n→ Pro forma IS"]
-        T16["T16\nBuild Pro Forma Balance Sheet\n(Art. 11)\n→ Pro forma BS"]
-    end
-
-    T10 & T11 & T12 & T13 --> T14
-    T14 -->|"GATE: must PASS"| T15 & T16
-              </pre>
+    TITLE["Phase -1: Close VDR Gaps<br/>Tasks T00 - T00H"]:::phase
+    
+    T00{{"💎 T00: AUDIT STATUS DECISION<br/>👥 Management + Deloitte<br/>❓ Are carveout financials audited?<br/>⏱ 1-2 days"}}:::purple
+    
+    T00A["🔴 T00A: Build XX_1<br/>Audited Carveout Income Statement<br/>👥 Accounting + Deloitte<br/>📄 04.02.04 + 04.03.01-05<br/>⏱ 4-6 weeks"]:::red
+    
+    T00B["🔴 T00B: Build XX_2<br/>Audited Carveout Balance Sheet<br/>👥 Accounting + Deloitte<br/>📄 04.02.04 + 04.03.01-05<br/>⏱ 4-6 weeks"]:::red
+    
+    T00C["🔴 T00C: Build XX_3<br/>Audited Carveout Cash Flow<br/>👥 Accounting + Deloitte<br/>📄 XX_1 + XX_2 + Working Capital<br/>⏱ 2-3 weeks"]:::red
+    
+    T00D["🟡 T00D: Build XX_4<br/>Financial Statement Notes<br/>👥 Accounting drafts → Deloitte reviews<br/>📄 XX_1-3 outputs<br/>⏱ 3-4 weeks"]:::yellow
+    
+    T00E["🟡 T00E: Build XX_5/6<br/>MD&A Workpapers<br/>👥 Management + FP&A<br/>📄 XX_1-3 + 04.04.01 + 04.07.01<br/>⏱ 1-2 weeks"]:::yellow
+    
+    T00F["🟡 T00F: Build XX_8<br/>Flash-Specific Risk Factors<br/>👥 Legal + Management<br/>📄 01.06.01-02 + DGC 10-K<br/>⏱ 1-2 weeks"]:::yellow
+    
+    T00G["🟡 T00G: Build XX_11<br/>Article 11 Pro Formas<br/>👥 Accounting Team<br/>📄 04.01.01 + XX_1-3<br/>⏱ 1 week"]:::yellow
+    
+    T00H["🟡 T00H: Build XX_12<br/>Kioxia JV Documentation<br/>👥 Management + Legal<br/>📄 09.03 + internal JV records<br/>⏱ 1 week"]:::yellow
+    
+    TITLE --> T00
+    T00 -->|"NOT AUDITED"| T00A
+    T00 -->|"NOT AUDITED"| T00B
+    T00A --> T00D
+    T00B --> T00D
+    T00C --> T00D
+    T00D --> T00E
+    T00D --> T00F
+    T00E --> T00G
+    T00F --> T00H
+                    </div>
+                    <div class="copy-button-container">
+                        <button class="copy-button" onclick="copyMermaidCode(this)">📋 Copy Mermaid Code</button>
+                    </div>
+                </div>
             </div>
-            <div class="codebox" id="p1Code" style="display:none;"></div>
-          </div>
-        </details>
-      </section>
 
-      <!-- PHASE 2 -->
-      <section class="section" id="phase2">
-        <div class="section-header">
-          <div>
-            <h3>Phase 2 — Footnotes (P2)</h3>
-            <p>Footnotes are designed as parallelizable “single-note” drafting jobs, gated by T14.</p>
-          </div>
-          <div class="actions">
-            <button class="smallbtn" data-copy="p2Src">Copy Mermaid</button>
-            <button class="smallbtn" data-toggle="p2Code">Show Mermaid source</button>
-          </div>
-        </div>
-
-        <details>
-          <summary>Phase 2 Diagram <span class="summary-right"><span class="pill">P2</span></span></summary>
-          <div class="content">
-            <div class="diagram-wrap">
-              <pre class="mermaid" id="p2Src">
+            <!-- Phase 0 Chart -->
+            <div class="chart-section" id="chart-p0">
+                <div class="chart-header">
+                    <h2>Phase 0: Foundation Setup — VDR Ingestion & Source Extraction</h2>
+                    <div class="phase-info">Tasks T01-T09 | Duration: 3-5 days | 👥 LLM (automated) + Accounting/Deloitte (T05 gate)</div>
+                </div>
+                <div class="chart-content">
+                    <div class="info-box">
+                        <h3>Purpose</h3>
+                        <p>Parse and extract source data from 342 VDR files. All tasks are LLM-ready extraction except T05 which is a critical decision gate requiring Accounting and Deloitte validation of financial data quality.</p>
+                    </div>
+                    <div class="mermaid">
 flowchart TD
-    %% ══════════════════════════════════════════════════
-    %% PHASE 2 — FOOTNOTES
-    %% ══════════════════════════════════════════════════
-    subgraph P2["🟩 PHASE 2 — Footnotes to Financial Statements"]
-        direction TB
-        T17["T17\nNote 1a Basis of Presentation & Carve-Out"]
-        T18["T18\nNote 1b Revenue Recognition (ASC 606)"]
-        T19["T19\nNote 1c Inventory Policy"]
-        T20["T20\nNote 1d PP&E / Intangibles / Goodwill"]
-        T21["T21\nNote 1e Leases (ASC 842)"]
-        T22["T22\nNote 1f Debt & Interest (ASC 470)"]
-        T23["T23\nNote 1g Income Taxes (ASC 740)"]
-        T24["T24\nNote 1h Stock-Based Compensation (ASC 718)"]
-        T25["T25\nNote 1i Segment Reporting Policy (ASC 280)"]
+    classDef green fill:#D4EDDA,stroke:#155724,color:#155724,stroke-width:2px
+    classDef yellow fill:#FFF3CD,stroke:#856404,color:#856404,stroke-width:2px
+    classDef red fill:#F8D7DA,stroke:#721C24,color:#721C24,stroke-width:2px
+    classDef purple fill:#E0BBE4,stroke:#5D3A8C,color:#5D3A8C,stroke-width:3px,font-weight:bold
+    classDef phase fill:#2E4057,stroke:#2E4057,color:#FFFFFF,stroke-width:2px
 
-        T26["T26\nNote 2 Investments & Fair Value"]
-        T27["T27\nNote 3 Debt Schedule / Covenants"]
-        T28["T28\nNote 4 Leases Quantitative Tables"]
-        T29["T29\nNote 5 Commitments & Contingencies"]
-        T30["T30\nNote 6 Income Taxes (tables + narrative)"]
-        T31["T31\nNote 7 SBC (expense + activity tables)"]
-        T32["T32\nNote 8 Segment Reporting (5 tables)"]
-        T33["T33\nNote 9 Related Parties"]
-        T34["T34\nNote 10 EPS & Subsequent Events"]
-
-        T17 --> T43
-        T24 --> T31
-        T25 --> T32
-    end
-              </pre>
+    TITLE["Phase 0: Foundation Setup<br/>Tasks T01 - T09"]:::phase
+    
+    T01["🟢 T01: Ingest & Index VDR<br/>👥 LLM<br/>📄 Flash_VDR_File_Index.xlsx<br/>⏱ 15 min"]:::green
+    
+    T02["🟢 T02: Parse DGC 10-K FY2023<br/>👥 LLM<br/>📄 03.03.02.05 DGC 10-K FY2023<br/>⏱ 30 min"]:::green
+    
+    T03["🟢 T03: Parse DGC 10-K FY2022<br/>👥 LLM<br/>📄 03.03.02.01 DGC 10-K FY2022<br/>⏱ 30 min"]:::green
+    
+    T04["🟢 T04: Parse DGC 10-K FY2021<br/>👥 LLM<br/>📄 03.03.02.02 DGC 10-K FY2021<br/>⏱ 30 min"]:::green
+    
+    T05{{"💎 T05: FINANCIAL VALIDATION GATE<br/>👥 Accounting Team + Deloitte<br/>❓ 12-point quality check<br/>⏱ 2-4 hours"}}:::purple
+    
+    T06["🟢 T06: Parse Pro Forma Model<br/>👥 LLM<br/>📄 04.01.01 ProFormaModel.xlsm<br/>⏱ 20 min"]:::green
+    
+    T07a["🟢 T07a: Parse Separation Agreement<br/>👥 LLM<br/>📄 05.01.01 SDA<br/>⏱ 45 min"]:::green
+    
+    T07b["🟢 T07b: Parse TSA + Loan Docs<br/>👥 LLM<br/>📄 05.02.01 TSA · 05.07.01-03<br/>⏱ 30 min"]:::green
+    
+    T07c["🟢 T07c: Parse EMA/TMA/IP/RRA<br/>👥 LLM<br/>📄 05.03.01 · 07.01.01 · 05.04-06<br/>⏱ 1 hr"]:::green
+    
+    T08["🟢 T08: Parse Carveout Methodology<br/>👥 LLM<br/>📄 04.03.01-05<br/>⏱ 30 min"]:::green
+    
+    T09["🟢 T09: Parse Draft Info Statement<br/>👥 LLM<br/>📄 03.06.07 FBK Draft Info Statement<br/>⏱ 45 min"]:::green
+    
+    TITLE --> T01
+    T01 --> T02
+    T01 --> T03
+    T01 --> T04
+    T01 --> T05
+    T01 --> T06
+    T01 --> T07a
+    T01 --> T07b
+    T01 --> T07c
+    T01 --> T08
+    T01 --> T09
+    T02 --> T05
+    T03 --> T05
+    T04 --> T05
+                    </div>
+                    <div class="copy-button-container">
+                        <button class="copy-button" onclick="copyMermaidCode(this)">📋 Copy Mermaid Code</button>
+                    </div>
+                </div>
             </div>
-            <div class="codebox" id="p2Code" style="display:none;"></div>
-          </div>
-        </details>
-      </section>
 
-      <!-- PHASE 3 -->
-      <section class="section" id="phase3">
-        <div class="section-header">
-          <div>
-            <h3>Phase 3 — MD&A & Market Risk (P3)</h3>
-            <p>Results of operations + liquidity + critical accounting estimates + Item 7A market risk (largely parallel after T14).</p>
-          </div>
-          <div class="actions">
-            <button class="smallbtn" data-copy="p3Src">Copy Mermaid</button>
-            <button class="smallbtn" data-toggle="p3Code">Show Mermaid source</button>
-          </div>
-        </div>
-
-        <details>
-          <summary>Phase 3 Diagram <span class="summary-right"><span class="pill">P3</span></span></summary>
-          <div class="content">
-            <div class="diagram-wrap">
-              <pre class="mermaid" id="p3Src">
+            <!-- Phase 1 Chart -->
+            <div class="chart-section" id="chart-p1">
+                <div class="chart-header">
+                    <h2>Phase 1: Financial Statements (Face Financials)</h2>
+                    <div class="phase-info">Tasks T10-T16 | Duration: 2-3 days + 4-6 hrs (T14 gate) | 👥 LLM drafts → Accounting reviews → Deloitte validates</div>
+                </div>
+                <div class="chart-content">
+                    <div class="info-box">
+                        <h3>Critical Path Gate</h3>
+                        <p>T14 Financial Tie-Out Gate is the most important quality checkpoint. Nothing proceeds to Phase 2 or 3 without T14 PASS. All financial statements must cross-check with zero variance across 12 validation points.</p>
+                    </div>
+                    <div class="mermaid">
 flowchart TD
-    %% ══════════════════════════════════════════════════
-    %% PHASE 3 — MD&A + MARKET RISK
-    %% ══════════════════════════════════════════════════
-    subgraph P3["🟨 PHASE 3 — MD&A and Market Risk"]
-        direction TB
-        T35["T35\nMD&A Overview & Separation Context"]
-        T36["T36\nRevenue Analysis by Segment"]
-        T37["T37\nGross Margin / Cost of Revenue"]
-        T38["T38\nR&D and SG&A"]
-        T39["T39\nBelow-the-Line & Net Income"]
-        T40["T40\nLiquidity — Operating Cash Flow"]
-        T41["T41\nLiquidity — Investing Activities"]
-        T42["T42\nLiquidity — Financing & Debt Structure"]
-        T43["T43\nCritical Accounting Estimates"]
-        T44["T44\nItem 7A Quantitative Market Risk"]
-    end
-              </pre>
+    classDef green fill:#D4EDDA,stroke:#155724,color:#155724,stroke-width:2px
+    classDef yellow fill:#FFF3CD,stroke:#856404,color:#856404,stroke-width:2px
+    classDef red fill:#F8D7DA,stroke:#721C24,color:#721C24,stroke-width:2px
+    classDef purple fill:#E0BBE4,stroke:#5D3A8C,color:#5D3A8C,stroke-width:3px,font-weight:bold
+    classDef phase fill:#2E4057,stroke:#2E4057,color:#FFFFFF,stroke-width:2px
+
+    TITLE["Phase 1: Financial Statements<br/>Tasks T10 - T16"]:::phase
+    
+    T10["🟡 T10: Draft Income Statement (3yr)<br/>👥 LLM drafts → Accounting reviews<br/>📄 T02-T05 + XX_1 if built<br/>⏱ 2 hrs LLM + 1 hr review"]:::yellow
+    
+    T11["🟡 T11: Draft Balance Sheet (2yr)<br/>👥 LLM drafts → Accounting reviews<br/>📄 T02-T05 + XX_2 if built<br/>⏱ 2 hrs LLM + 1 hr review"]:::yellow
+    
+    T12["🟡 T12: Draft Cash Flow (3yr)<br/>👥 LLM drafts → Accounting reviews<br/>📄 T02-T05 + XX_3 + 04.04.01<br/>⏱ 2 hrs LLM + 1 hr review"]:::yellow
+    
+    T13["🟡 T13: Draft Equity Statement (3yr)<br/>👥 LLM drafts → Accounting reviews<br/>📄 T02-T05 + 11.03.06<br/>⏱ 1 hr LLM + 30 min review"]:::yellow
+    
+    T14{{"💎 T14: FINANCIAL TIE-OUT GATE<br/>👥 Accounting + Deloitte<br/>❓ 12-point cross-check<br/>⏱ 2-4 hours"}}:::purple
+    
+    T15["🟡 T15: Pro Forma Income Statement<br/>👥 LLM drafts → Accounting reviews<br/>📄 T14 PASS + 04.01.01 + XX_11<br/>⏱ 2 hrs LLM + 1 hr review"]:::yellow
+    
+    T16["🟡 T16: Pro Forma Balance Sheet<br/>👥 LLM drafts → Accounting reviews<br/>📄 T14 PASS + 06.02 + XX_11<br/>⏱ 2 hrs LLM + 1 hr review"]:::yellow
+    
+    TITLE --> T10
+    TITLE --> T11
+    TITLE --> T12
+    TITLE --> T13
+    T10 --> T14
+    T11 --> T14
+    T12 --> T14
+    T13 --> T14
+    T14 -->|"PASS"| T15
+    T14 -->|"PASS"| T16
+    T14 -.->|"FAIL"| T10
+                    </div>
+                    <div class="copy-button-container">
+                        <button class="copy-button" onclick="copyMermaidCode(this)">📋 Copy Mermaid Code</button>
+                    </div>
+                </div>
             </div>
-            <div class="codebox" id="p3Code" style="display:none;"></div>
-          </div>
-        </details>
-      </section>
 
-      <!-- PHASE 4 -->
-      <section class="section" id="phase4">
-        <div class="section-header">
-          <div>
-            <h3>Phase 4 — Part I Business Narrative (P4)</h3>
-            <p>Business description, cybersecurity, risk factors (split), properties, legal proceedings.</p>
-          </div>
-          <div class="actions">
-            <button class="smallbtn" data-copy="p4Src">Copy Mermaid</button>
-            <button class="smallbtn" data-toggle="p4Code">Show Mermaid source</button>
-          </div>
-        </div>
-
-        <details>
-          <summary>Phase 4 Diagram <span class="summary-right"><span class="pill">P4</span></span></summary>
-          <div class="content">
-            <div class="diagram-wrap">
-              <pre class="mermaid" id="p4Src">
+            <!-- Phase 2A Chart -->
+            <div class="chart-section" id="chart-p2a">
+                <div class="chart-header">
+                    <h2>Phase 2A: Note 1 — Summary of Significant Accounting Policies</h2>
+                    <div class="phase-info">Tasks T17-T25 | Duration: 1 week | 👥 LLM (policies) + Accounting/Tax reviews (critical notes)</div>
+                </div>
+                <div class="chart-content">
+                    <div class="mermaid">
 flowchart TD
-    %% ══════════════════════════════════════════════════
-    %% PHASE 4 — PART I BUSINESS NARRATIVE
-    %% ══════════════════════════════════════════════════
-    subgraph P4["🟥 PHASE 4 — Part I: Business Narrative"]
-        direction TB
-        T45["T45\nCompany Overview & Separation Rationale"]
-        T46["T46\nProducts & Technology"]
-        T47["T47\nManufacturing & JV Narrative"]
-        T48["T48\nCustomers, Channels & Concentration"]
-        T49["T49\nCompetition"]
-        T50["T50\nIntellectual Property"]
-        T51["T51\nEmployees & Human Capital"]
-        T52["T52\nESG & Sustainability"]
-        T53["T53\nItem 1C Cybersecurity Disclosure"]
+    classDef green fill:#D4EDDA,stroke:#155724,color:#155724,stroke-width:2px
+    classDef yellow fill:#FFF3CD,stroke:#856404,color:#856404,stroke-width:2px
+    classDef red fill:#F8D7DA,stroke:#721C24,color:#721C24,stroke-width:2px
+    classDef purple fill:#E0BBE4,stroke:#5D3A8C,color:#5D3A8C,stroke-width:3px,font-weight:bold
+    classDef phase fill:#2E4057,stroke:#2E4057,color:#FFFFFF,stroke-width:2px
 
-        T54a["T54a\nRisk Factors — Extract & Categorize"]
-        T54b["T54b\nRisk Factors — Business/Operational"]
-        T54c["T54c\nRisk Factors — Financial/Capital Structure"]
-        T54d["T54d\nRisk Factors — Separation/NewCo"]
-        T54e["T54e\nRisk Factors — Tech/IP/Reg/ESG"]
-
-        T55["T55\nItem 2 Properties"]
-        T56["T56\nItem 3 Legal Proceedings"]
-
-        T54a --> T54b & T54c & T54d & T54e
-    end
-              </pre>
+    TITLE["Phase 2A: Note 1 Policies<br/>Tasks T17 - T25"]:::phase
+    
+    T17["🟡 T17: Note 1a - Basis of Presentation<br/>👥 LLM → Accounting reviews<br/>📄 04.03.01 + XX_4<br/>⏱ 1.5 hrs + 45 min"]:::yellow
+    
+    T18["🟢 T18: Note 1b - Revenue Recognition<br/>👥 LLM<br/>📄 DGC 10-K + 08.01<br/>⏱ 1 hr"]:::green
+    
+    T19["🟢 T19: Note 1c - Inventory Policy<br/>👥 LLM<br/>📄 DGC 10-K + 09.03<br/>⏱ 45 min"]:::green
+    
+    T20["🟢 T20: Note 1d - PP&E & Intangibles<br/>👥 LLM<br/>📄 DGC 10-K Note 1<br/>⏱ 45 min"]:::green
+    
+    T21["🟢 T21: Note 1e - Leases ASC 842<br/>👥 LLM<br/>📄 13.01 Real Estate<br/>⏱ 1 hr"]:::green
+    
+    T22["🟢 T22: Note 1f - Debt Policy ASC 470<br/>👥 LLM<br/>📄 06.03 Credit Agmts<br/>⏱ 45 min"]:::green
+    
+    T23["🟡 T23: Note 1g - Income Taxes ASC 740<br/>👥 LLM → Tax Team reviews<br/>📄 07.02 + 07.03<br/>⏱ 1 hr + 30 min"]:::yellow
+    
+    T24["🟢 T24: Note 1h - Stock Comp ASC 718<br/>👥 LLM<br/>📄 11.03 Equity Plans<br/>⏱ 45 min"]:::green
+    
+    T25["🟢 T25: Note 1i - Segment Policy ASC 280<br/>👥 LLM<br/>📄 08.01 Business Segments<br/>⏱ 30 min"]:::green
+    
+    TITLE --> T17
+    T17 --> T18
+    T18 --> T19
+    T19 --> T20
+    T20 --> T21
+    T21 --> T22
+    T22 --> T23
+    T23 --> T24
+    T24 --> T25
+                    </div>
+                    <div class="copy-button-container">
+                        <button class="copy-button" onclick="copyMermaidCode(this)">📋 Copy Mermaid Code</button>
+                    </div>
+                </div>
             </div>
-            <div class="codebox" id="p4Code" style="display:none;"></div>
-          </div>
-        </details>
-      </section>
 
-      <!-- PHASE 5 -->
-      <section class="section" id="phase5">
-        <div class="section-header">
-          <div>
-            <h3>Phase 5 — Arrangements with DGC (P5)</h3>
-            <p>Agreement-by-agreement drafting in parallel, then assemble into one coherent section (T63).</p>
-          </div>
-          <div class="actions">
-            <button class="smallbtn" data-copy="p5Src">Copy Mermaid</button>
-            <button class="smallbtn" data-toggle="p5Code">Show Mermaid source</button>
-          </div>
-        </div>
-
-        <details>
-          <summary>Phase 5 Diagram <span class="summary-right"><span class="pill">P5</span></span></summary>
-          <div class="content">
-            <div class="diagram-wrap">
-              <pre class="mermaid" id="p5Src">
+            <!-- Phase 2B Chart -->
+            <div class="chart-section" id="chart-p2b">
+                <div class="chart-header">
+                    <h2>Phase 2B: Notes 2-10 — Supporting Schedules & Disclosures</h2>
+                    <div class="phase-info">Tasks T26-T34 | Duration: 1 week | 👥 LLM (tables) + Accounting/Legal reviews (disclosures)</div>
+                </div>
+                <div class="chart-content">
+                    <div class="mermaid">
 flowchart TD
-    %% ══════════════════════════════════════════════════
-    %% PHASE 5 — ARRANGEMENTS WITH DGC
-    %% ══════════════════════════════════════════════════
-    subgraph P5["🟪 PHASE 5 — Arrangements with DGC"]
-        direction TB
-        T57["T57\nSDA Summary"]
-        T58["T58\nTSA Summary"]
-        T59["T59\nEMA Summary"]
-        T60["T60\nTMA Summary"]
-        T61["T61\nIP + Trademark License Summary"]
-        T62["T62\nRRA + Loans/Guarantees Summary"]
-        T63["T63\nAssemble Complete Arrangements with DGC Section"]
-    end
+    classDef green fill:#D4EDDA,stroke:#155724,color:#155724,stroke-width:2px
+    classDef yellow fill:#FFF3CD,stroke:#856404,color:#856404,stroke-width:2px
+    classDef red fill:#F8D7DA,stroke:#721C24,color:#721C24,stroke-width:2px
+    classDef purple fill:#E0BBE4,stroke:#5D3A8C,color:#5D3A8C,stroke-width:3px,font-weight:bold
+    classDef phase fill:#2E4057,stroke:#2E4057,color:#FFFFFF,stroke-width:2px
 
-    T57 & T58 & T59 & T60 & T61 & T62 --> T63
-              </pre>
+    TITLE["Phase 2B: Notes 2-10<br/>Tasks T26 - T34"]:::phase
+    
+    T26["🟢 T26: Note 2 - Investments & Fair Value<br/>👥 LLM<br/>📄 06.06 Hedging Policy<br/>⏱ 1 hr"]:::green
+    
+    T27["🟢 T27: Note 3 - Debt Schedule<br/>👥 LLM<br/>📄 06.02.04 + T22<br/>⏱ 1 hr"]:::green
+    
+    T28["🟢 T28: Note 4 - Leases Schedule<br/>👥 LLM<br/>📄 13.01 + T21<br/>⏱ 1 hr"]:::green
+    
+    T29["🟢 T29: Note 5 - Commitments<br/>👥 LLM<br/>📄 09.02 + 07.05<br/>⏱ 1 hr"]:::green
+    
+    T30a["🟢 T30a: Note 6 - Extract Tax Data<br/>👥 LLM<br/>📄 07.03 Tax Attributes<br/>⏱ 30 min"]:::green
+    
+    T30b["🟡 T30b: Note 6 - Draft Tax Note<br/>👥 LLM → Tax Team<br/>📄 T30a + T23<br/>⏱ 1 hr + 30 min"]:::yellow
+    
+    T31["🟢 T31: Note 7 - Stock Comp Detail<br/>👥 LLM<br/>📄 11.03.06 + T24<br/>⏱ 1 hr"]:::green
+    
+    T32["🟢 T32: Note 8 - Segment Tables<br/>👥 LLM<br/>📄 08.01 + T25<br/>⏱ 1.5 hrs"]:::green
+    
+    T33["🟡 T33: Note 9 - Related Parties<br/>👥 LLM → Legal reviews<br/>📄 04.03.04 + T07a-c<br/>⏱ 1 hr + 30 min"]:::yellow
+    
+    T34["🟢 T34: Note 10 - EPS & Subsequent<br/>👥 LLM<br/>📄 03.01.13 Separation<br/>⏱ 45 min"]:::green
+    
+    TITLE --> T26
+    T26 --> T27
+    T27 --> T28
+    T28 --> T29
+    T29 --> T30a
+    T30a --> T30b
+    T30b --> T31
+    T31 --> T32
+    T32 --> T33
+    T33 --> T34
+                    </div>
+                    <div class="copy-button-container">
+                        <button class="copy-button" onclick="copyMermaidCode(this)">📋 Copy Mermaid Code</button>
+                    </div>
+                </div>
             </div>
-            <div class="codebox" id="p5Code" style="display:none;"></div>
-          </div>
-        </details>
-      </section>
 
-      <!-- PHASE 6 -->
-      <section class="section" id="phase6">
-        <div class="section-header">
-          <div>
-            <h3>Phase 6 — Governance, Compensation & Ownership (P6)</h3>
-            <p>Part III items: directors/officers, committees, comp tables (NEO), ownership, related parties cross-links.</p>
-          </div>
-          <div class="actions">
-            <button class="smallbtn" data-copy="p6Src">Copy Mermaid</button>
-            <button class="smallbtn" data-toggle="p6Code">Show Mermaid source</button>
-          </div>
-        </div>
-
-        <details>
-          <summary>Phase 6 Diagram <span class="summary-right"><span class="pill">P6</span></span></summary>
-          <div class="content">
-            <div class="diagram-wrap">
-              <pre class="mermaid" id="p6Src">
+            <!-- Phase 3A Chart -->
+            <div class="chart-section" id="chart-p3a">
+                <div class="chart-header">
+                    <h2>Phase 3A: MD&A — Results of Operations</h2>
+                    <div class="phase-info">Tasks T35-T39 | Duration: 2 weeks | 👥 LLM drafts → FP&A/Management reviews (all hybrid)</div>
+                </div>
+                <div class="chart-content">
+                    <div class="info-box">
+                        <h3>Why All Hybrid</h3>
+                        <p>MD&A is management's narrative explaining financial results. While LLM can structure tables and calculate variances, management must explain WHY changes occurred (business drivers), provide forward-looking context, and exercise judgment on materiality.</p>
+                    </div>
+                    <div class="mermaid">
 flowchart TD
-    %% ══════════════════════════════════════════════════
-    %% PHASE 6 — GOVERNANCE / COMP / OWNERSHIP
-    %% ══════════════════════════════════════════════════
-    subgraph P6["🟫 PHASE 6 — Governance, Compensation & Ownership"]
-        direction TB
-        T64["T64\nDirectors & Officers (bios + independence)"]
-        T65["T65\nBoard Committees + Governance Structure"]
-        T66["T66\nComp Philosophy + Plan Summaries"]
-        T67["T67\nNEO Comp Tables (depends on SBC note)"]
-        T68["T68\nSecurity Ownership Tables"]
-        T69["T69\nRelated Party Disclosures (cross-ref)"]
-        T70["T70\nCertain Relationships / Transactions"]
-    end
+    classDef green fill:#D4EDDA,stroke:#155724,color:#155724,stroke-width:2px
+    classDef yellow fill:#FFF3CD,stroke:#856404,color:#856404,stroke-width:2px
+    classDef red fill:#F8D7DA,stroke:#721C24,color:#721C24,stroke-width:2px
+    classDef purple fill:#E0BBE4,stroke:#5D3A8C,color:#5D3A8C,stroke-width:3px,font-weight:bold
+    classDef phase fill:#2E4057,stroke:#2E4057,color:#FFFFFF,stroke-width:2px
 
+    TITLE["Phase 3A: MD&A Results<br/>Tasks T35 - T39"]:::phase
+    
+    T35["🟡 T35: MD&A Overview<br/>👥 LLM → Management<br/>📄 01.01 Background + XX_5<br/>⏱ 1 hr + 30 min"]:::yellow
+    
+    T36["🟡 T36: Revenue Analysis YoY<br/>👥 LLM → FP&A<br/>📄 T10/T32 + XX_5<br/>⏱ 2 hrs + 1 hr"]:::yellow
+    
+    T37["🟡 T37: Gross Margin Analysis<br/>👥 LLM → FP&A<br/>📄 T10 + 09.03 + XX_5<br/>⏱ 1.5 hrs + 45 min"]:::yellow
+    
+    T38["🟡 T38: R&D & SG&A Analysis<br/>👥 LLM → FP&A<br/>📄 T10 + 10.02 + XX_5<br/>⏱ 1.5 hrs + 45 min"]:::yellow
+    
+    T39["🟡 T39: Below-Line & Net Income<br/>👥 LLM → FP&A<br/>📄 T10 + 07.02 + XX_5<br/>⏱ 1 hr + 30 min"]:::yellow
+    
+    TITLE --> T35
+    T35 --> T36
+    T36 --> T37
+    T37 --> T38
+    T38 --> T39
+                    </div>
+                    <div class="copy-button-container">
+                        <button class="copy-button" onclick="copyMermaidCode(this)">📋 Copy Mermaid Code</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 3B Chart -->
+            <div class="chart-section" id="chart-p3b">
+                <div class="chart-header">
+                    <h2>Phase 3B: MD&A — Liquidity & Capital Resources</h2>
+                    <div class="phase-info">Tasks T40-T44 | Duration: 1.5 weeks | 👥 LLM drafts → FP&A/Treasury reviews</div>
+                </div>
+                <div class="chart-content">
+                    <div class="mermaid">
+flowchart TD
+    classDef green fill:#D4EDDA,stroke:#155724,color:#155724,stroke-width:2px
+    classDef yellow fill:#FFF3CD,stroke:#856404,color:#856404,stroke-width:2px
+    classDef red fill:#F8D7DA,stroke:#721C24,color:#721C24,stroke-width:2px
+    classDef purple fill:#E0BBE4,stroke:#5D3A8C,color:#5D3A8C,stroke-width:3px,font-weight:bold
+    classDef phase fill:#2E4057,stroke:#2E4057,color:#FFFFFF,stroke-width:2px
+
+    TITLE["Phase 3B: MD&A Liquidity<br/>Tasks T40 - T44"]:::phase
+    
+    T40["🟡 T40: Operating Cash Flow<br/>👥 LLM → FP&A<br/>📄 T12 + 04.04 + XX_6<br/>⏱ 1.5 hrs + 45 min"]:::yellow
+    
+    T41["🟡 T41: Investing Cash Flow<br/>👥 LLM → FP&A<br/>📄 T12 + 04.07 + XX_6<br/>⏱ 1 hr + 30 min"]:::yellow
+    
+    T42["🟡 T42: Financing & Debt<br/>👥 LLM → Treasury<br/>📄 T12/T27 + 06.03<br/>⏱ 1.5 hrs + 45 min"]:::yellow
+    
+    T43["🟡 T43: Critical Accounting Estimates<br/>👥 LLM → Accounting<br/>📄 T17/T19/T23 + 04.03.01<br/>⏱ 1.5 hrs + 1 hr"]:::yellow
+    
+    T44["🟡 T44: Item 7A Market Risk<br/>👥 LLM → Treasury<br/>📄 06.06 + XX_13 if built<br/>⏱ 1.5 hrs + 45 min"]:::yellow
+    
+    TITLE --> T40
+    T40 --> T41
+    T41 --> T42
+    T42 --> T43
+    T43 --> T44
+                    </div>
+                    <div class="copy-button-container">
+                        <button class="copy-button" onclick="copyMermaidCode(this)">📋 Copy Mermaid Code</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 4A Chart -->
+            <div class="chart-section" id="chart-p4a">
+                <div class="chart-header">
+                    <h2>Phase 4A: Item 1 Business — Core Narrative</h2>
+                    <div class="phase-info">Tasks T45-T53 | Duration: 2 weeks | 👥 LLM drafts → Management/Product/Ops/Legal reviews</div>
+                </div>
+                <div class="chart-content">
+                    <div class="mermaid">
+flowchart TD
+    classDef green fill:#D4EDDA,stroke:#155724,color:#155724,stroke-width:2px
+    classDef yellow fill:#FFF3CD,stroke:#856404,color:#856404,stroke-width:2px
+    classDef red fill:#F8D7DA,stroke:#721C24,color:#721C24,stroke-width:2px
+    classDef purple fill:#E0BBE4,stroke:#5D3A8C,color:#5D3A8C,stroke-width:3px,font-weight:bold
+    classDef phase fill:#2E4057,stroke:#2E4057,color:#FFFFFF,stroke-width:2px
+
+    TITLE["Phase 4A: Business Core<br/>Tasks T45 - T53"]:::phase
+    
+    T45["🟡 T45: Business Overview<br/>👥 LLM → Management<br/>📄 01.01 + 03.01.13<br/>⏱ 1.5 hrs + 45 min"]:::yellow
+    
+    T46["🟡 T46: Products & Technology<br/>👥 LLM → Product/Eng<br/>📄 10.01 + 10.02<br/>⏱ 2 hrs + 1 hr"]:::yellow
+    
+    T47["🟡 T47: Manufacturing & Kioxia JV<br/>👥 LLM → Ops + Legal<br/>📄 09.03 + XX_12<br/>⏱ 1.5 hrs + 1 hr"]:::yellow
+    
+    T48["🟡 T48: Customers & Channels<br/>👥 LLM → Sales<br/>📄 08.04 + 16.02<br/>⏱ 1 hr + 30 min"]:::yellow
+    
+    T49["🟢 T49: Competition<br/>👥 LLM<br/>📄 08.02.01-03<br/>⏱ 1 hr"]:::green
+    
+    T50["🟡 T50: Intellectual Property<br/>👥 LLM → Legal<br/>📄 10.03.06 + 05.04<br/>⏱ 1 hr + 30 min"]:::yellow
+    
+    T51["🟢 T51: Employees & Human Capital<br/>👥 LLM<br/>📄 11.01.01 + 11.05<br/>⏱ 1 hr"]:::green
+    
+    T52["🟢 T52: ESG & Sustainability<br/>👥 LLM<br/>📄 09.06 FY2023 Sustainability<br/>⏱ 1 hr"]:::green
+    
+    T53["🟡 T53: Item 1C Cybersecurity<br/>👥 LLM → IT + Legal<br/>📄 10.05.01-02<br/>⏱ 1.5 hrs + 1 hr"]:::yellow
+    
+    TITLE --> T45
+    T45 --> T46
+    T46 --> T47
+    T47 --> T48
+    T48 --> T49
+    T49 --> T50
+    T50 --> T51
+    T51 --> T52
+    T52 --> T53
+                    </div>
+                    <div class="copy-button-container">
+                        <button class="copy-button" onclick="copyMermaidCode(this)">📋 Copy Mermaid Code</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 4B Chart -->
+            <div class="chart-section" id="chart-p4b">
+                <div class="chart-header">
+                    <h2>Phase 4B: Risk Factors & Other Items</h2>
+                    <div class="phase-info">Tasks T54a-T56 | Duration: 1.5 weeks | 👥 LLM → Management/CFO/Legal/IT reviews</div>
+                </div>
+                <div class="chart-content">
+                    <div class="mermaid">
+flowchart TD
+    classDef green fill:#D4EDDA,stroke:#155724,color:#155724,stroke-width:2px
+    classDef yellow fill:#FFF3CD,stroke:#856404,color:#856404,stroke-width:2px
+    classDef red fill:#F8D7DA,stroke:#721C24,color:#721C24,stroke-width:2px
+    classDef purple fill:#E0BBE4,stroke:#5D3A8C,color:#5D3A8C,stroke-width:3px,font-weight:bold
+    classDef phase fill:#2E4057,stroke:#2E4057,color:#FFFFFF,stroke-width:2px
+
+    TITLE["Phase 4B: Risk Factors<br/>Tasks T54a - T56"]:::phase
+    
+    T54a["🟢 T54a: Risk Factors - Extract<br/>👥 LLM<br/>📄 01.06.01 + DGC 10-K + XX_8<br/>⏱ 1 hr"]:::green
+    
+    T54b["🟡 T54b: Risk Factors - Business<br/>👥 LLM → Management<br/>📄 T54a + XX_8<br/>⏱ 2 hrs + 1 hr"]:::yellow
+    
+    T54c["🟡 T54c: Risk Factors - Financial<br/>👥 LLM → CFO<br/>📄 T54a + XX_8<br/>⏱ 1.5 hrs + 45 min"]:::yellow
+    
+    T54d["🟡 T54d: Risk Factors - Separation<br/>👥 LLM → Legal<br/>📄 T54a + XX_8 + T07a-c<br/>⏱ 2 hrs + 1 hr"]:::yellow
+    
+    T54e["🟡 T54e: Risk Factors - Tech/Reg<br/>👥 LLM → Legal + IT<br/>📄 T54a + XX_8 + 10.05.02<br/>⏱ 1.5 hrs + 1 hr"]:::yellow
+    
+    T55["🟢 T55: Item 2 - Properties<br/>👥 LLM<br/>📄 13.01 Real Estate<br/>⏱ 45 min"]:::green
+    
+    T56["🟡 T56: Item 3 - Legal Proceedings<br/>👥 LLM → Legal<br/>📄 07.05.01-03<br/>⏱ 1 hr + 45 min"]:::yellow
+    
+    TITLE --> T54a
+    T54a --> T54b
+    T54a --> T54c
+    T54a --> T54d
+    T54a --> T54e
+    T54e --> T55
+    T55 --> T56
+                    </div>
+                    <div class="copy-button-container">
+                        <button class="copy-button" onclick="copyMermaidCode(this)">📋 Copy Mermaid Code</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 5 Chart -->
+            <div class="chart-section" id="chart-p5">
+                <div class="chart-header">
+                    <h2>Phase 5: Arrangements with DGC (After the Spin-Off)</h2>
+                    <div class="phase-info">Tasks T57-T63 | Duration: 1-1.5 weeks | 👥 LLM drafts → Legal reviews (all hybrid)</div>
+                </div>
+                <div class="chart-content">
+                    <div class="info-box">
+                        <h3>Why All Hybrid</h3>
+                        <p>Every separation agreement summary requires legal review to verify accuracy and ensure no confidential/sensitive terms are mischaracterized. Material contracts govern post-spin relationship with DGC.</p>
+                    </div>
+                    <div class="mermaid">
+flowchart TD
+    classDef green fill:#D4EDDA,stroke:#155724,color:#155724,stroke-width:2px
+    classDef yellow fill:#FFF3CD,stroke:#856404,color:#856404,stroke-width:2px
+    classDef red fill:#F8D7DA,stroke:#721C24,color:#721C24,stroke-width:2px
+    classDef purple fill:#E0BBE4,stroke:#5D3A8C,color:#5D3A8C,stroke-width:3px,font-weight:bold
+    classDef phase fill:#2E4057,stroke:#2E4057,color:#FFFFFF,stroke-width:2px
+
+    TITLE["Phase 5: Arrangements<br/>Tasks T57 - T63"]:::phase
+    
+    T57["🟡 T57: SDA Summary<br/>👥 LLM → Legal<br/>📄 T07a output<br/>⏱ 1.5 hrs + 45 min"]:::yellow
+    
+    T58["🟡 T58: TSA Summary<br/>👥 LLM → Ops + Legal<br/>📄 T07b + 12.02<br/>⏱ 1 hr + 30 min"]:::yellow
+    
+    T59["🟡 T59: EMA Summary<br/>👥 LLM → HR + Legal<br/>📄 T07c + 11.03.02<br/>⏱ 1 hr + 30 min"]:::yellow
+    
+    T60["🟡 T60: TMA Summary<br/>👥 LLM → Tax + Legal<br/>📄 T07c + 07.02<br/>⏱ 1 hr + 30 min"]:::yellow
+    
+    T61["🟡 T61: IP + Trademark Summary<br/>👥 LLM → Legal<br/>📄 T07c + 05.04/05<br/>⏱ 1.5 hrs + 45 min"]:::yellow
+    
+    T62["🟡 T62: RRA + Loan Summary<br/>👥 LLM → Legal<br/>📄 T07b/c + 05.06/07<br/>⏱ 1 hr + 30 min"]:::yellow
+    
+    T63["🟡 T63: Assemble Arrangements Section<br/>👥 LLM → Legal<br/>📄 T57-T62 outputs<br/>⏱ 1 hr + 1 hr"]:::yellow
+    
+    TITLE --> T57
+    TITLE --> T58
+    TITLE --> T59
+    TITLE --> T60
+    TITLE --> T61
+    TITLE --> T62
+    T57 --> T63
+    T58 --> T63
+    T59 --> T63
+    T60 --> T63
+    T61 --> T63
+    T62 --> T63
+                    </div>
+                    <div class="copy-button-container">
+                        <button class="copy-button" onclick="copyMermaidCode(this)">📋 Copy Mermaid Code</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 6 Chart -->
+            <div class="chart-section" id="chart-p6">
+                <div class="chart-header">
+                    <h2>Phase 6: Governance, Compensation & Ownership</h2>
+                    <div class="phase-info">Tasks T64a-T70 | Duration: 1.5-2 weeks | 👥 LLM + Management/Legal/Comp Committee</div>
+                </div>
+                <div class="chart-content">
+                    <div class="info-box">
+                        <h3>Compensation Sensitivity</h3>
+                        <p>T66 (CD&A) is the most sensitive disclosure in Form 10. Compensation Committee must approve every word. It describes executive compensation philosophy and decisions, subject to Say-on-Pay vote.</p>
+                    </div>
+                    <div class="mermaid">
+flowchart TD
+    classDef green fill:#D4EDDA,stroke:#155724,color:#155724,stroke-width:2px
+    classDef yellow fill:#FFF3CD,stroke:#856404,color:#856404,stroke-width:2px
+    classDef red fill:#F8D7DA,stroke:#721C24,color:#721C24,stroke-width:2px
+    classDef purple fill:#E0BBE4,stroke:#5D3A8C,color:#5D3A8C,stroke-width:3px,font-weight:bold
+    classDef phase fill:#2E4057,stroke:#2E4057,color:#FFFFFF,stroke-width:2px
+
+    TITLE["Phase 6: Governance<br/>Tasks T64a - T70"]:::phase
+    
+    T64a["🟢 T64a: Extract D&O Data<br/>👥 LLM<br/>📄 02.02.02 + 11.06.02<br/>⏱ 30 min"]:::green
+    
+    T64b["🟡 T64b: Draft D&O Bios<br/>👥 LLM → Management<br/>📄 T64a output<br/>⏱ 1.5 hrs + 1 hr"]:::yellow
+    
+    T65["🟡 T65: Corporate Governance<br/>👥 LLM → Legal<br/>📄 02.04.08-11<br/>⏱ 1.5 hrs + 1 hr"]:::yellow
+    
+    T66["🟡 T66: CD&A Narrative<br/>👥 LLM → Comp Committee<br/>📄 11.02.01 + 11.03.01<br/>⏱ 2 hrs + 1.5 hrs"]:::yellow
+    
+    T67["🟡 T67: NEO Compensation Tables<br/>👥 LLM → Comp + Legal<br/>📄 11.03.06 + T66<br/>⏱ 2 hrs + 1 hr"]:::yellow
+    
+    T68["🟢 T68: Security Ownership Table<br/>👥 LLM<br/>📄 14.04.02<br/>⏱ 1 hr"]:::green
+    
+    T69["🟡 T69: Related Party Transactions<br/>👥 LLM → Legal<br/>📄 T63/T33 + 04.03.04<br/>⏱ 1 hr + 45 min"]:::yellow
+    
+    T70["🟢 T70: Accountant Fees Table<br/>👥 LLM<br/>📄 04.08.01<br/>⏱ 30 min"]:::green
+    
+    TITLE --> T64a
+    T64a --> T64b
+    T64b --> T65
+    T65 --> T66
     T66 --> T67
-    T65 --> T69
-              </pre>
+    T67 --> T68
+    T68 --> T69
+    T69 --> T70
+                    </div>
+                    <div class="copy-button-container">
+                        <button class="copy-button" onclick="copyMermaidCode(this)">📋 Copy Mermaid Code</button>
+                    </div>
+                </div>
             </div>
-            <div class="codebox" id="p6Code" style="display:none;"></div>
-          </div>
-        </details>
-      </section>
 
-      <!-- PHASE 7 -->
-      <section class="section" id="phase7">
-        <div class="section-header">
-          <div>
-            <h3>Phase 7 — Capitalization & Securities (P7)</h3>
-            <p>Item 5–6 / security descriptions / capitalization & dilution mechanics and supporting tables.</p>
-          </div>
-          <div class="actions">
-            <button class="smallbtn" data-copy="p7Src">Copy Mermaid</button>
-            <button class="smallbtn" data-toggle="p7Code">Show Mermaid source</button>
-          </div>
-        </div>
-
-        <details>
-          <summary>Phase 7 Diagram <span class="summary-right"><span class="pill">P7</span></span></summary>
-          <div class="content">
-            <div class="diagram-wrap">
-              <pre class="mermaid" id="p7Src">
+            <!-- Phase 7 Chart -->
+            <div class="chart-section" id="chart-p7">
+                <div class="chart-header">
+                    <h2>Phase 7: Capitalization & Securities Description</h2>
+                    <div class="phase-info">Tasks T71-T73 | Duration: 3-5 days | 👥 LLM + Legal + Management + Board</div>
+                </div>
+                <div class="chart-content">
+                    <div class="info-box">
+                        <h3>Dividend Policy is Human-Only</h3>
+                        <p>T73 changed from LLM to Human-Only based on feedback. Dividend policy requires Board strategic decision. Debt docs only show constraints (what's NOT allowed), not the policy itself.</p>
+                    </div>
+                    <div class="mermaid">
 flowchart TD
-    %% ══════════════════════════════════════════════════
-    %% PHASE 7 — CAPITALIZATION & SECURITIES
-    %% ══════════════════════════════════════════════════
-    subgraph P7["⬜ PHASE 7 — Capitalization & Securities"]
-        direction TB
-        T71["T71\nCapitalization Table (pre/post)"]
-        T72["T72\nDescription of Securities"]
-        T73["T73\nDividend Policy / Distribution Mechanics"]
-    end
+    classDef green fill:#D4EDDA,stroke:#155724,color:#155724,stroke-width:2px
+    classDef yellow fill:#FFF3CD,stroke:#856404,color:#856404,stroke-width:2px
+    classDef red fill:#F8D7DA,stroke:#721C24,color:#721C24,stroke-width:2px
+    classDef purple fill:#E0BBE4,stroke:#5D3A8C,color:#5D3A8C,stroke-width:3px,font-weight:bold
+    classDef phase fill:#2E4057,stroke:#2E4057,color:#FFFFFF,stroke-width:2px
 
+    TITLE["Phase 7: Capitalization<br/>Tasks T71 - T73"]:::phase
+    
+    T71["🟢 T71: Capitalization Table<br/>👥 LLM<br/>📄 06.01.03/04 Capital Structure<br/>⏱ 1 hr"]:::green
+    
+    T72["🟡 T72: Securities Description<br/>👥 LLM → Legal<br/>📄 02.04.08 Charter + 02.04.09 Bylaws<br/>⏱ 1.5 hrs + 1 hr"]:::yellow
+    
+    T73["🔴 T73: Dividend Policy Statement<br/>👥 Management + Board<br/>📄 06.03 Debt docs (constraints only)<br/>⏱ 30 min (human judgment)"]:::red
+    
+    TITLE --> T71
     T71 --> T72
-              </pre>
+    T72 --> T73
+                    </div>
+                    <div class="copy-button-container">
+                        <button class="copy-button" onclick="copyMermaidCode(this)">📋 Copy Mermaid Code</button>
+                    </div>
+                </div>
             </div>
-            <div class="codebox" id="p7Code" style="display:none;"></div>
-          </div>
-        </details>
-      </section>
 
-      <!-- PHASE 8 -->
-      <section class="section" id="phase8">
-        <div class="section-header">
-          <div>
-            <h3>Phase 8 — Assembly, Cross-Reference & Quality Gates (P8)</h3>
-            <p>Final verification and conflict resolution feed full Form 10 assembly.</p>
-          </div>
-          <div class="actions">
-            <button class="smallbtn" data-copy="p8Src">Copy Mermaid</button>
-            <button class="smallbtn" data-toggle="p8Code">Show Mermaid source</button>
-          </div>
-        </div>
-
-        <details open>
-          <summary>Phase 8 Diagram <span class="summary-right"><span class="pill">P8</span></span></summary>
-          <div class="content">
-            <div class="diagram-wrap">
-              <pre class="mermaid" id="p8Src">
+            <!-- Phase 8 Chart -->
+            <div class="chart-section" id="chart-p8">
+                <div class="chart-header">
+                    <h2>Phase 8: Final Assembly, Cross-Reference & Quality Gates</h2>
+                    <div class="phase-info">Tasks T74-T81 | Duration: 1-2 weeks | 👥 Multi-party coordination → Board approval → SEC filing</div>
+                </div>
+                <div class="chart-content">
+                    <div class="info-box">
+                        <h3>Three Final Decision Gates</h3>
+                        <p><strong>T75:</strong> Cross-reference verification (Legal + Accounting + Management)<br>
+                        <strong>T79:</strong> Management review gate (Management + CFO + General Counsel)<br>
+                        <strong>T80:</strong> Board approval gate (Board of Directors)</p>
+                    </div>
+                    <div class="mermaid">
 flowchart TD
-    %% ══════════════════════════════════════════════════
-    %% PHASE 8 — ASSEMBLY & QUALITY GATES
-    %% ══════════════════════════════════════════════════
-    subgraph P8["🧩 PHASE 8 — Assembly, Cross-Reference & Quality Gates"]
-        direction TB
-        T74["T74\nCross-Reference Map (Items ↔ Notes ↔ Exhibits)"]
-        T75["T75\nVerification Checklist (math + citations)"]
-        T76["T76\nConflict Resolution (remove inconsistencies)"]
-        T77["T77\nAssemble Full Form 10 Draft"]
-        T78["T78\nFinal QC Pass (format + exhibits index)"]
-    end
+    classDef green fill:#D4EDDA,stroke:#155724,color:#155724,stroke-width:2px
+    classDef yellow fill:#FFF3CD,stroke:#856404,color:#856404,stroke-width:2px
+    classDef red fill:#F8D7DA,stroke:#721C24,color:#721C24,stroke-width:2px
+    classDef purple fill:#E0BBE4,stroke:#5D3A8C,color:#5D3A8C,stroke-width:3px,font-weight:bold
+    classDef phase fill:#2E4057,stroke:#2E4057,color:#FFFFFF,stroke-width:2px
 
-    T75 --> T76 --> T77
-    T74 --> T77
+    TITLE["Phase 8: Assembly & QC<br/>Tasks T74 - T81"]:::phase
+    
+    T74["🟢 T74: Compile Exhibit Index<br/>👥 LLM<br/>📄 Section 05 agmts + 11.03 plans<br/>⏱ 30 min"]:::green
+    
+    T75{{"💎 T75: CROSS-REFERENCE GATE<br/>👥 Legal + Accounting + Management<br/>❓ 30+ figure consistency checks<br/>⏱ 4-6 hours"}}:::purple
+    
+    T76["🔴 T76: Conflict Resolution<br/>👥 Legal + Accounting + Management<br/>📄 T75 flags + source docs<br/>⏱ 2-4 hrs per conflict"]:::red
+    
+    T77["🟡 T77: Final Form 10 Assembly<br/>👥 LLM → Legal reviews<br/>📄 All outputs + 03.06.07<br/>⏱ 2 hrs + 2 hrs"]:::yellow
+    
+    T78["🟢 T78: XBRL Tagging Guidance<br/>👥 LLM<br/>📄 T10/11/12 outputs<br/>⏱ 1 hr"]:::green
+    
+    T79{{"💎 T79: MANAGEMENT REVIEW GATE<br/>👥 Management + CFO + GC<br/>❓ Content accuracy<br/>⏱ 4-8 hours"}}:::purple
+    
+    T80{{"💎 T80: BOARD APPROVAL GATE<br/>👥 Board of Directors<br/>❓ Authorize filing<br/>⏱ 2 hours"}}:::purple
+    
+    T81["🔴 T81: SEC FILING<br/>👥 Legal + SEC Counsel<br/>📄 T80 authorized Form 10<br/>⏱ 2-4 hours"]:::red
+    
+    TITLE --> T74
+    T74 --> T75
+    T75 --> T76
+    T76 --> T77
     T77 --> T78
-              </pre>
+    T77 --> T79
+    T79 -->|"APPROVED"| T80
+    T79 -.->|"CHANGES"| T76
+    T80 -->|"AUTHORIZED"| T81
+    T80 -.->|"DEFERRED"| T79
+                    </div>
+                    <div class="copy-button-container">
+                        <button class="copy-button" onclick="copyMermaidCode(this)">📋 Copy Mermaid Code</button>
+                    </div>
+                </div>
             </div>
-            <div class="codebox" id="p8Code" style="display:none;"></div>
-          </div>
-        </details>
-      </section>
-
-      <div class="footer">
-        Built for quick review + presentation. If you want, I can also add:
-        (1) a “Task list” table per phase (IDs + 1-line purpose), (2) deep links from each task node to a VDR path, or (3) a downloadable ZIP structure for GitHub Pages.
-      </div>
-    </main>
-  </div>
-
-  <script>
-    // Mermaid init
-    mermaid.initialize({
-      startOnLoad: true,
-      theme: "dark",
-      securityLevel: "loose",
-      flowchart: { curve: "basis" }
-    });
-
-    // Expand/collapse all details
-    const expandAll = () => document.querySelectorAll("details").forEach(d => d.open = true);
-    const collapseAll = () => document.querySelectorAll("details").forEach(d => d.open = false);
-
-    document.getElementById("expandAllBtn").addEventListener("click", expandAll);
-    document.getElementById("collapseAllBtn").addEventListener("click", collapseAll);
-
-    // Nav filter
-    const navSearch = document.getElementById("navSearch");
-    const nav = document.getElementById("nav");
-    navSearch.addEventListener("input", () => {
-      const q = navSearch.value.trim().toLowerCase();
-      nav.querySelectorAll("a").forEach(a => {
-        const label = (a.getAttribute("data-label") || a.textContent).toLowerCase();
-        a.style.display = label.includes(q) ? "" : "none";
-      });
-    });
-
-    // Toggle Mermaid source visibility (populate codebox with the exact Mermaid text)
-    document.querySelectorAll("[data-toggle]").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const targetId = btn.getAttribute("data-toggle");
-        const box = document.getElementById(targetId);
-        const srcId = btn.closest(".section, #overview")?.querySelector("pre.mermaid")?.id;
-
-        if (!box || !srcId) return;
-
-        const pre = document.getElementById(srcId);
-        const raw = pre.textContent.replace(/^\n+|\n+$/g, "");
-
-        if (box.style.display === "none") {
-          box.textContent = raw;
-          box.style.display = "block";
-          btn.textContent = "Hide Mermaid source";
-        } else {
-          box.style.display = "none";
-          btn.textContent = "Show Mermaid source";
+            
+        </main>
+        
+        <footer>
+            <p><strong>Flash Corporation Form 10 Build Workflow</strong></p>
+            <p>Version 2.0 Enhanced — February 2026</p>
+            <p>DGC Spin-Off of Flash Memory Business | 84 Tasks | 10 Phases | 6 Decision Gates</p>
+            <p style="margin-top: 15px; font-size: 0.9em; opacity: 0.8;">Created with Mermaid.js | LLM Capability Classification Framework</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Initialize Mermaid
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4EDDA',
+                primaryTextColor: '#155724',
+                primaryBorderColor: '#155724',
+                lineColor: '#2a5298',
+                secondaryColor: '#FFF3CD',
+                tertiaryColor: '#F8D7DA'
+            }
+        });
+        
+        // Copy Mermaid code to clipboard
+        function copyMermaidCode(button) {
+            const mermaidDiv = button.closest('.chart-content').querySelector('.mermaid');
+            const code = mermaidDiv.textContent.trim();
+            
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = button.textContent;
+                button.textContent = '✅ Copied!';
+                button.style.background = '#28a745';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#2a5298';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+                button.textContent = '❌ Failed';
+                button.style.background = '#dc3545';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#2a5298';
+                }, 2000);
+            });
         }
-      });
-    });
-
-    // Copy Mermaid to clipboard
-    document.querySelectorAll("[data-copy]").forEach(btn => {
-      btn.addEventListener("click", async () => {
-        const srcId = btn.getAttribute("data-copy");
-        const pre = document.getElementById(srcId);
-        if (!pre) return;
-
-        const raw = pre.textContent.replace(/^\n+|\n+$/g, "");
-        try {
-          await navigator.clipboard.writeText(raw);
-          const old = btn.textContent;
-          btn.textContent = "Copied!";
-          setTimeout(() => btn.textContent = old, 900);
-        } catch(e){
-          alert("Copy failed (browser permissions). You can manually select the Mermaid source after clicking 'Show Mermaid source'.");
-        }
-      });
-    });
-  </script>
+        
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    </script>
 </body>
 </html>
