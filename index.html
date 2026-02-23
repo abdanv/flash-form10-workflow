@@ -3,115 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flash Corporation — Form 10 Build Workflow</title>
+    <title>Flash Corp — Form 10 Workflow Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <style>
-        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .container-fluid { padding: 2rem; }
-        .header-section { background: #1F3864; color: white; padding: 2rem; border-radius: 8px; margin-bottom: 2rem; }
-        .nav-pills .nav-link { color: #1F3864; font-weight: 500; border: 1px solid #dee2e6; margin: 0.2rem; }
-        .nav-pills .nav-link.active { background-color: #1F3864 !important; border-color: #1F3864; }
-        .diagram-container { background: white; padding: 2rem; border-radius: 8px; border: 1px solid #dee2e6; margin-bottom: 2rem; overflow-x: auto; }
-        .task-table { background: white; border-radius: 8px; border: 1px solid #dee2e6; }
+        :root { --p0: #D6E4F7; --p1: #D4EDDA; --p2: #E0F2FE; --p3: #FDE8D8; --p4: #EDE9FB; --p5: #D4F0E4; --p6: #FBECD8; --p7: #CCE5FF; --p8: #F8D7DA; }
+        body { background-color: #f8f9fa; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+        .sidebar { background: #212529; color: white; min-height: 100vh; padding-top: 20px; }
+        .nav-link { color: #adb5bd; border-radius: 0; margin-bottom: 5px; border-left: 4px solid transparent; transition: all 0.2s; }
+        .nav-link:hover { color: white; background: #343a40; }
+        .nav-link.active { color: white; background: #343a40; border-left-color: #0d6efd; font-weight: 600; }
+        .phase-header { border-bottom: 2px solid #dee2e6; margin-bottom: 25px; padding-bottom: 10px; }
+        .mermaid-container { background: white; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin-bottom: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .task-table { font-size: 0.9rem; background: white; }
         .task-table th { background: #f1f3f5; }
-        .phase-header { border-left: 5px solid #1F3864; padding-left: 1rem; margin-bottom: 1.5rem; }
-        .badge-llm { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .status-badge { font-size: 0.75rem; padding: 4px 8px; border-radius: 4px; }
+        .phase-0 { border-top: 5px solid #1F3864; } .phase-1 { border-top: 5px solid #155724; }
+        .phase-2 { border-top: 5px solid #0C4A6E; } .phase-3 { border-top: 5px solid #5B3427; }
+        .phase-4 { border-top: 5px solid #3B2D7A; } .phase-5 { border-top: 5px solid #185C37; }
+        .phase-6 { border-top: 5px solid #6B2D00; } .phase-7 { border-top: 5px solid #004085; }
+        .phase-8 { border-top: 5px solid #4A0E0E; }
     </style>
 </head>
 <body>
 
 <div class="container-fluid">
-    <div class="header-section text-center">
-        <h1>Project Flashback: Form 10 Build Workflow</h1>
-        <p class="lead">Interactive LLM Task Decomposition Map & Workflow Diagrams</p>
-        <span class="badge bg-light text-dark">February 2026</span>
+    <div class="row">
+        <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse shadow">
+            <div class="position-sticky pt-3">
+                <div class="px-3 mb-4">
+                    <h5 class="text-white">PROJECT FLASHBACK</h5>
+                    <p class="text-muted small">Form 10 Task Map v2.0</p>
+                </div>
+                <ul class="nav flex-column" id="phaseTabs" role="tablist">
+                    <li class="nav-item">
+                        <button class="nav-link active w-100 text-start" id="p0-tab" data-bs-toggle="tab" data-bs-target="#p0-content" type="button">⬛ P0: Foundation</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link w-100 text-start" id="p1-tab" data-bs-toggle="tab" data-bs-target="#p1-content" type="button">🟩 P1: Financials</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link w-100 text-start" id="p2-tab" data-bs-toggle="tab" data-bs-target="#p2-content" type="button">🟦 P2: Footnotes</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link w-100 text-start" id="p3-tab" data-bs-toggle="tab" data-bs-target="#p3-content" type="button">🟫 P3: MD&A</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link w-100 text-start" id="p4-tab" data-bs-toggle="tab" data-bs-target="#p4-content" type="button">🟪 P4: Business</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link w-100 text-start" id="p5-tab" data-bs-toggle="tab" data-bs-target="#p5-content" type="button">🟢 P5: Arrangements</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link w-100 text-start" id="p6-tab" data-bs-toggle="tab" data-bs-target="#p6-content" type="button">🟠 P6: Governance</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link w-100 text-start" id="p7-tab" data-bs-toggle="tab" data-bs-target="#p7-content" type="button">🔵 P7: Capitalization</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link w-100 text-start" id="p8-tab" data-bs-toggle="tab" data-bs-target="#p8-content" type="button">🟥 P8: Assembly</button>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+            <div class="tab-content" id="phaseContent">
+                
+                <div class="tab-pane fade show active" id="p0-content" role="tabpanel">
+                    <div class="phase-header">
+                        <h2>Phase 0: Foundation — VDR Ingestion & Data Extraction</h2>
+                        <p class="text-muted">Parses and structures 342 VDR documents into reusable data extracts.</p>
+                    </div>
+                    <div class="mermaid-container">
+                        <pre class="mermaid">
+                        flowchart TD
+                            subgraph P0["⬛ PHASE 0 — Foundation: VDR Ingestion & Source Data Extraction"]
+                                direction TB
+                                T01["T01\nIngest & Index VDR\n📄 Flash_VDR_File_Index.xlsx\n→ Master VDR Registry"]
+                                T02["T02\nParse DGC 10-K FY2023\n📄 03.03.02.05 DGC 10-K\n→ Segment extract FY23"]
+                                T03["T03\nParse DGC 10-K FY2022\n📄 03.03.02.01 DGC 10-K\n→ Segment extract FY22"]
+                                T04["T04\nParse DGC 10-K FY2021\n📄 03.03.02.02 DGC 10-K\n→ Segment extract FY21"]
+                                T05["T05\nValidate Historicals\n📄 04.02.04 FBK_Financials\n→ Validated tables"]
+                                T06["T06\nParse Pro Forma Model\n📄 04.01.01 ProFormaModel\n→ Adj. Register"]
+                                T07["T07\nParse Separation Agreements\n📄 05.01.01 SDA / TSA\n→ Terms Register"]
+                                T08["T08\nParse Allocation Logic\n📄 04.03.01 White Paper\n→ Cost Summary"]
+                                T09["T09\nParse Info Statement\n📄 03.06.07 Draft IS\n→ Section Map"]
+                                T01 --> T02 & T03 & T04 & T05 & T06 & T07 & T08 & T09
+                            end
+                            classDef phase0 fill:#D6E4F7,stroke:#1F3864,stroke-width:2px;
+                            class P0,T01,T02,T03,T04,T05,T06,T07,T08,T09 phase0;
+                        </pre>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered task-table shadow-sm">
+                            <thead><tr><th>ID</th><th>Task Title</th><th>Dependencies</th><th>Source Documents</th><th>Output</th></tr></thead>
+                            <tbody>
+                                <tr><td>T01</td><td>Ingest & Index VDR</td><td>None</td><td>Flash_VDR_File_Index.xlsx</td><td>Master VDR Registry (JSON)</td></tr>
+                                <tr><td>T02</td><td>Extract FY23 Segment Data</td><td>T01</td><td>03.03.02.05 DGC 10-K FY2023</td><td>FY23 Flash Segment Extract</td></tr>
+                                <tr><td>T05</td><td>Validate FBK Financials</td><td>T02-T04</td><td>04.02.04 FBK_Historical_Financials</td><td>Validated Financial Tables</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="p1-content" role="tabpanel">
+                    <div class="phase-header">
+                        <h2>Phase 1: Financial Statements</h2>
+                        <p class="text-muted">Constructs the four face financial statements and Article 11 pro formas.</p>
+                    </div>
+                    <div class="mermaid-container">
+                        <pre class="mermaid">
+                        flowchart TD
+                            subgraph P1["🟩 PHASE 1 — Financial Statements: Construction & Tie-Out"]
+                                direction TB
+                                T10["T10\nIncome Statement\n(3-Year)"]
+                                T11["T11\nBalance Sheet\n(2-Year)"]
+                                T12["T12\nCash Flow Statement\n(3-Year)"]
+                                T13["T13\nStatement of Equity\n(Rollforward)"]
+                                T14{{"T14\nTie-Out Gate\nArithmetic Check"}}
+                                T15["T15\nPro Forma IS\n(Art 11)"]
+                                T16["T16\nPro Forma BS\n(Art 11)"]
+                                T10 & T11 & T12 & T13 --> T14
+                                T14 --> T15 & T16
+                            end
+                            classDef phase1 fill:#D4EDDA,stroke:#155724,stroke-width:2px;
+                            class P1,T10,T11,T12,T13,T15,T16 phase1;
+                            classDef gate fill:#FF4444,stroke:#880000,color:white;
+                            class T14 gate;
+                        </pre>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered task-table">
+                            <thead><tr><th>ID</th><th>Task Title</th><th>Dependencies</th><th>Source Documents</th><th>Output</th></tr></thead>
+                            <tbody>
+                                <tr><td>T10</td><td>Draft Income Statement</td><td>T02-T05</td><td>FBK Financials + DGC 10-K</td><td>Comparative P&L Table</td></tr>
+                                <tr><td>T14</td><td>Financials Tie-Out Gate</td><td>T10-T13</td><td>P1 Outputs</td><td>12-Point Cross-Check Report</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="p2-content" role="tabpanel">
+                    <div class="phase-header">
+                        <h2>Phase 2: Footnotes to Financial Statements</h2>
+                        <p class="text-muted">18 parallel tasks drafting specific accounting policies and schedules.</p>
+                    </div>
+                    <div class="mermaid-container">
+                        <pre class="mermaid">
+                        flowchart LR
+                            subgraph P2["🟦 PHASE 2 — Footnotes to Financial Statements"]
+                                direction LR
+                                T17["Note 1a\nBasis of Pres."]
+                                T18["Note 1b\nRevenue"]
+                                T19["Note 1c\nInventory"]
+                                T27["Note 3\nDebt"]
+                                T29["Note 5\nContingencies"]
+                                T17 --- T18 --- T19 --- T27 --- T29
+                            end
+                            classDef phase2 fill:#E0F2FE,stroke:#0C4A6E,stroke-width:2px;
+                            class P2,T17,T18,T19,T27,T29 phase2;
+                        </pre>
+                    </div>
+                </div>
+                
+                <div class="tab-pane fade" id="p8-content" role="tabpanel">
+                    <div class="phase-header">
+                        <h2>Phase 8: Assembly & Final QC</h2>
+                        <p class="text-muted">Consolidation of all 78 tasks into the final SEC-ready Form 10.</p>
+                    </div>
+                    <div class="mermaid-container">
+                        <pre class="mermaid">
+                        flowchart TD
+                            subgraph P8["🟥 PHASE 8 — Assembly & Quality Gates"]
+                                T75{{"T75\nLegal & Cross-Ref\nVerification"}}
+                                T77["T77\nAssemble Final\nForm 10"]
+                                T78["T78\nXBRL Element\nMapping"]
+                                T75 --> T77 --> T78
+                            end
+                            classDef phase8 fill:#F8D7DA,stroke:#4A0E0E,stroke-width:2px;
+                            class P8,T77,T78 phase8;
+                            classDef gate fill:#FF4444,stroke:#880000,color:white;
+                            class T75 gate;
+                        </pre>
+                    </div>
+                </div>
+
+            </div>
+        </main>
     </div>
-
-    <ul class="nav nav-pills justify-content-center mb-4" id="workflowTabs" role="tablist">
-        <li class="nav-item"><button class="nav-link active" id="p0-tab" data-bs-toggle="pill" data-bs-target="#p0">Phase 0: Foundation</button></li>
-        <li class="nav-item"><button class="nav-link" id="p1-tab" data-bs-toggle="pill" data-bs-target="#p1">Phase 1: Financials</button></li>
-        <li class="nav-item"><button class="nav-link" id="p2-tab" data-bs-toggle="pill" data-bs-target="#p2">Phase 2: Footnotes</button></li>
-        <li class="nav-item"><button class="nav-link" id="p3-tab" data-bs-toggle="pill" data-bs-target="#p3">Phase 3: MD&A</button></li>
-        <li class="nav-item"><button class="nav-link" id="p4-tab" data-bs-toggle="pill" data-bs-target="#p4">Phase 4: Business</button></li>
-        <li class="nav-item"><button class="nav-link" id="p5-tab" data-bs-toggle="pill" data-bs-target="#p5">Phase 5: Arrangements</button></li>
-        <li class="nav-item"><button class="nav-link" id="p6-tab" data-bs-toggle="pill" data-bs-target="#p6">Phase 6: Governance</button></li>
-    </ul>
-
-    <div class="tab-content" id="workflowTabContent">
-        <div class="tab-pane fade show active" id="p0" role="tabpanel">
-            <div class="phase-header">
-                <h2>Phase 0: Foundation — VDR Ingestion & Data Extraction</h2>
-                <p>All foundation tasks must complete before any drafting begins. These tasks parse raw VDR documents into reusable data extracts[cite: 111, 126].</p>
-            </div>
-            <div class="diagram-container">
-                <pre class="mermaid">
-                flowchart TD
-                    T01["T01\nIngest & Index VDR"]
-                    T02["T02\nParse DGC 10-K FY2023"]
-                    T03["T03\nParse DGC 10-K FY2022"]
-                    T04["T04\nParse DGC 10-K FY2021"]
-                    T05["T05\nValidate FBK Financials"]
-                    T06["T06\nParse Pro Forma Model"]
-                    T07a["T07a\nParse SDA"]
-                    T07b["T07b\nParse TSA + Loan"]
-                    T07c["T07c\nParse EMA + TMA + IP"]
-                    T08["T08\nParse Carve-Out Methodology"]
-                    T09["T09\nParse Draft Info Statement"]
-
-                    T01 --> T02 & T03 & T04 & T05 & T06 & T07a & T07b & T07c & T08 & T09
-                    T02 & T03 & T04 --> T05
-                    classDef phase0 fill:#D6E4F7,stroke:#1F3864,stroke-width:2px,color:#1F3864
-                    class T01,T02,T03,T04,T05,T06,T07a,T07b,T07c,T08,T09 phase0
-                </pre>
-            </div>
-            <table class="table task-table table-hover">
-                <thead><tr><th>ID</th><th>Task Title</th><th>Dependencies</th><th>Output</th></tr></thead>
-                <tbody>
-                    <tr><td>T01</td><td>Ingest & Index VDR</td><td>None</td><td>Master VDR Registry (342 entries) [cite: 126]</td></tr>
-                    <tr><td>T02</td><td>Parse DGC 10-K FY2023</td><td>T01</td><td>FY2023 Flash segment extract [cite: 127]</td></tr>
-                    <tr><td>T05</td><td>Validate FBK Financials</td><td>T01-T04</td><td>Financials validation report [cite: 130]</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="tab-pane fade" id="p1" role="tabpanel">
-            <div class="phase-header">
-                <h2>Phase 1: Financial Statements (Face)</h2>
-                <p>Construct the four face financial statements. T14 (tie-out) is the critical quality gate for the entire workflow[cite: 111, 137].</p>
-            </div>
-            <div class="diagram-container">
-                <pre class="mermaid">
-                flowchart TD
-                    T10["T10\nDraft Income Statement"]
-                    T11["T11\nDraft Balance Sheet"]
-                    T12["T12\nDraft Cash Flow Statement"]
-                    T13["T13\nDraft Statement of Equity"]
-                    T14["🔴 T14\nFINANCIAL TIE-OUT"]
-                    T15["T15\nPro Forma IS"]
-                    T16["T16\nPro Forma BS"]
-
-                    T10 & T11 & T12 & T13 --> T14
-                    T14 --> T15 & T16
-                    classDef phase1 fill:#D4EDDA,stroke:#155724,stroke-width:2px,color:#155724
-                    class T10,T11,T12,T13,T14,T15,T16 phase1
-                </pre>
-            </div>
-            <table class="table task-table table-hover">
-                <thead><tr><th>ID</th><th>Task Title</th><th>Dependencies</th><th>Key Gate</th></tr></thead>
-                <tbody>
-                    <tr><td>T10</td><td>Draft Income Statement (3yr)</td><td>T02-05, T08</td><td>N/A [cite: 138]</td></tr>
-                    <tr><td>T14</td><td>Financial Statements Tie-Out</td><td>T10-T13</td><td>🔴 12-point cross-check PASS/FAIL [cite: 142]</td></tr>
-                </tbody>
-            </table>
-        </div>
-        
-        </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'loose' });
 </script>
 </body>
 </html>
